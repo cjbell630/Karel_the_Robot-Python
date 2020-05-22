@@ -37,6 +37,7 @@ PURPLE = (200, 0, 255)
 SLEEVE_COLORS = [
     ("Green", GREEN), ("Orange", ORANGE), ("Pink", PINK), ("Blue", TEAL), ("Purple", PURPLE)
 ]
+"""SLEEVE_COLORS documentation"""
 
 KAREL_ON = numpy.array([
     [CLR, CLR, CLR, CLR, CLR, CLR, BLACK, BLACK, BLACK, BLACK, CLR, CLR, CLR, BLACK, BLACK, BLACK, BLACK, CLR, CLR, CLR,
