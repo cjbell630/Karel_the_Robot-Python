@@ -1,3 +1,19 @@
+"""top line\n
+
+##Question  1##
+>Answer 1\n
+
+##Question  2##
+>Answer 2\n
+
+##Question  3##
+>Answer 3\n
+
+---
+
+"""
+
+
 import numpy
 import threading
 import time
@@ -413,7 +429,15 @@ class World(object):
     def __init__(self, width, height, name="Karel J Robot", fps=4, beeper_pos=[], wall_pos=[]):
         global FPS, BEEPERS
         self.IDEAL_HEIGHT = 700
+        """####**CHANGE THIS VALUE DEPENDING ON THE DEVICE THIS SCRIPT IS RUNNING ON**####
+        >This is the maximum number of pixels the World window can take up vertically.\n
+        >Check your monitor resolution for the best results.\n
+        >* Ideal value for Repl.it: 600"""
         self.IDEAL_WIDTH = 900
+        """####**CHANGE THIS VALUE DEPENDING ON THE DEVICE THIS SCRIPT IS RUNNING ON**####
+        >This is the maximum number of pixels the World window can take up horizontally.\n
+        >Check your monitor resolution for the best results.\n
+        >* Ideal value for Repl.it: 800"""
         FPS = fps
 
         self.__width = width
