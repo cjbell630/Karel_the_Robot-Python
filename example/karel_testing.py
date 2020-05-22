@@ -1,4 +1,4 @@
-from karel_the_robot import World, Robot
+from src.karel_the_robot import World, Robot
 
 
 #TODO: terminal, then run pdoc --html karel_the_robot.py
