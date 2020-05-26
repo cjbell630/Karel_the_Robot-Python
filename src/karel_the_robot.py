@@ -13,14 +13,13 @@
 
 """
 
-
 import numpy
 import threading
 import time
-from functools import wraps
-from itertools import count
 import traceback
 import os
+from functools import wraps
+from itertools import count
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
@@ -53,7 +52,6 @@ PURPLE = (200, 0, 255)
 SLEEVE_COLORS = [
     ("Green", GREEN), ("Orange", ORANGE), ("Pink", PINK), ("Blue", TEAL), ("Purple", PURPLE)
 ]
-"""SLEEVE_COLORS documentation"""
 
 KAREL_ON = numpy.array([
     [CLR, CLR, CLR, CLR, CLR, CLR, BLACK, BLACK, BLACK, BLACK, CLR, CLR, CLR, BLACK, BLACK, BLACK, BLACK, CLR, CLR, CLR,
@@ -154,7 +152,7 @@ BEEPER = [
 BEEPER_SURF = 0
 
 
-def continued_exception(text):
+def _continued_exception(text):
     try:
         raise Exception(text)
     except Exception as exc:
@@ -163,7 +161,7 @@ def continued_exception(text):
         traceback.print_exception(Exception, exc, None, limit=-1)
 
 
-def replace_2d(array, value, replacement):
+def _replace_2d(array, value, replacement):
     array = array.copy()
     for x in range(0, len(array)):
         for y in range(0, len(array[x])):
@@ -172,7 +170,7 @@ def replace_2d(array, value, replacement):
     return array
 
 
-def readable_pixarray_to_surface(array):
+def _readable_pixarray_to_surface(array):
     # array = array.swapaxes(0, 1)
     surf = pygame.Surface(array.shape[0:2], pygame.SRCALPHA).convert()
     pygame.surfarray.blit_array(surf, array)
@@ -180,17 +178,17 @@ def readable_pixarray_to_surface(array):
     return surf
 
 
-def tile_to_point(tile):
+def _tile_to_point(tile):
     global TILE_WIDTH
     return (tile + 0.5) * TILE_WIDTH
 
 
-def point_to_tile(point):
+def _point_to_tile(point):
     global TILE_WIDTH
     return (point / TILE_WIDTH) - 0.5
 
 
-def wall_at(tile_x, tile_y):
+def _wall_at(tile_x, tile_y):
     global WALLS
     for w in WALLS:
         if w[0] == tile_x and w[1] == tile_y:
@@ -198,7 +196,7 @@ def wall_at(tile_x, tile_y):
     return False
 
 
-def extract_vals_inside_parenthesis(string, open_parenthesis_index):
+def _extract_vals_inside_parenthesis(string, open_parenthesis_index):
     p = []
     temp = ""
     count = open_parenthesis_index + 1
@@ -215,17 +213,14 @@ def extract_vals_inside_parenthesis(string, open_parenthesis_index):
     return p
 
 
-"""text above class declaration"""
-
-
 class Robot(pygame.sprite.Sprite):
-    """documentation for Robot
-    
+    """documentation for Robot and constructor
 
     """
     __ids = count(0)
 
-    def __init__(self, x, y, direction, num_of_beepers, color=-1):  # color is an int, maybe add string colors eventually
+    def __init__(self, x, y, direction, num_of_beepers, color=-1):
+        # color is an int, maybe add string colors eventually
         super().__init__()
         self.id = next(self.__ids)
         """documentation for self.id"""
@@ -240,24 +235,24 @@ class Robot(pygame.sprite.Sprite):
         self.is_alive = True
         self.__prev_fps = 4
         self.__zoom_fps = 20
-        # self.array = numpy.where(KAREL_ON == , self.__color, KAREL_ON)
-        self.__array = replace_2d(KAREL_ON, GREEN, self.__color[1])
+        self.__array = _replace_2d(KAREL_ON, GREEN, self.__color[1])
 
         print("[" + self.__color[0] + " Robot] Initializing...")
 
-    def scale_image(self, width):
-        """documentation for scale_image"""
+    def _scale_image(self, width):
         self.__image = pygame.transform.rotate(
-            pygame.transform.scale(readable_pixarray_to_surface(self.__array), (width, width)),
+            pygame.transform.scale(_readable_pixarray_to_surface(self.__array), (width, width)),
             self.__direction)
         self.__rect = self.__image.get_rect()
-        self.__rect.x = tile_to_point(self.__tile_x - 0.5)
-        self.__rect.y = tile_to_point(self.__tile_y - 0.5)
+        self.__rect.x = _tile_to_point(self.__tile_x - 0.5)
+        self.__rect.y = _tile_to_point(self.__tile_y - 0.5)
 
     def get_sleeve_color(self):
+        """doc for get_sleeve_color"""
         return self.__color[0]
 
     def turn_left(self):
+        """doc for turn_left"""
         if self.is_alive:
             self.wait()
             self.__image = pygame.transform.rotate(self.__image, 90)
@@ -265,7 +260,7 @@ class Robot(pygame.sprite.Sprite):
             self.has_moved_this_frame = True
 
     def move(self):
-
+        """doc for move"""
         if self.is_alive:
             self.wait()
             if self.front_is_clear():
@@ -282,24 +277,26 @@ class Robot(pygame.sprite.Sprite):
                     self.__rect.y -= TILE_WIDTH
                     self.__tile_y -= 1
             else:
-                continued_exception("[" + self.__color[0] + " Robot] I ran into a wall! ")
+                _continued_exception("[" + self.__color[0] + " Robot] I ran into a wall! ")
                 self.turn_off()
 
             print("tried to move")
             self.has_moved_this_frame = True
 
     def pick_beeper(self):
+        """doc for pick_beeper"""
         global BEEPERS
 
         if self.is_alive:
             self.wait()
             beepers_at_pos = [b for b in BEEPERS if b.__tile_x == self.__tile_x and b.__tile_y == self.__tile_y]
             if len(beepers_at_pos) > 0:
-                beepers_at_pos[0].dec()
+                beepers_at_pos[0]._dec()
                 self.__beepers += 1
             self.has_moved_this_frame = True
 
     def put_beeper(self):
+        """doc for put_beeper"""
         global BEEPERS
 
         if self.is_alive:
@@ -308,54 +305,84 @@ class Robot(pygame.sprite.Sprite):
                 beepers_at_pos = [b for b in BEEPERS if b.tile_x == self.__tile_x and b.tile_y == self.__tile_y]
                 self.__beepers -= 1
                 if len(beepers_at_pos) > 0:
-                    beepers_at_pos[0].inc()
+                    beepers_at_pos[0]._inc()
                 else:
-                    BEEPERS.add(Beeper(self.__tile_x, self.__tile_y, 1))
+                    BEEPERS.add(_Beeper(self.__tile_x, self.__tile_y, 1))
             else:
                 # raise Exception("[" + self.__color[0] + " Robot] I don't have any beepers! ")
-                continued_exception("[" + self.__color[0] + " Robot] I don't have any beepers! ")
+                _continued_exception("[" + self.__color[0] + " Robot] I don't have any beepers! ")
                 self.turn_off()
 
             print("tried to put beeper" + str(self.__beepers))
             self.has_moved_this_frame = True
 
+    def has_any_beepers(self):
+        """doc for has_any_beepers"""
+        return self.__beepers > 0
+
+    def front_is_clear(self):
+        """doc for front_is_clear"""
+        if self.__direction == 0:
+            return not _wall_at(self.__tile_x + 0.5, self.__tile_y)
+        elif self.__direction == 180:
+            return not _wall_at(self.__tile_x - 0.5, self.__tile_y)
+        elif self.__direction == 270:
+            return not _wall_at(self.__tile_x, self.__tile_y + 0.5)
+        elif self.__direction == 90:
+            return not _wall_at(self.__tile_x, self.__tile_y - 0.5)
+        else:
+            return False
+
+    def facing_north(self):
+        """doc for facing_north"""
+        return self.__direction == 90
+
+    def facing_south(self):
+        """doc for facing_south"""
+        return self.__direction == 270
+
+    def facing_east(self):
+        """doc for facing_east"""
+        return self.__direction == 0
+
+    def facing_west(self):
+        """doc for facing_west"""
+        return self.__direction == 180
+
+    def standing_on_any_beepers(self):
+        """doc for standing_on_any_beepers"""
+        return len([b for b in BEEPERS if b.__tile_x == self.__tile_x and b.__tile_y == self.__tile_y]) > 0
+
+    def standing_on_any_robots(self):
+        """doc for standing_on_any_robots"""
+        return False
+
+    def turn_off(self):
+        """doc for turn_off"""
+        global TILE_WIDTH
+        if self.is_alive:
+            self.wait()
+            self.is_alive = False
+            self.__array = _replace_2d(self.__array, YELLOW, L_GREY)
+            self._scale_image(TILE_WIDTH)
+            print("am dead")
+
     def wait(self):
+        """doc for wait"""
         global FPS
         if self.is_alive:  # prevents commands from being run before the loop checks for dead robots, putting it in an infinite loop
             while self.has_moved_this_frame:
                 # print("waiting for frame")
                 time.sleep(1.0 / FPS)
 
-    def has_any_beepers(self):
-        return self.__beepers > 0
-
-    def front_is_clear(self):
-        if self.__direction == 0:
-            return not wall_at(self.__tile_x + 0.5, self.__tile_y)
-        elif self.__direction == 180:
-            return not wall_at(self.__tile_x - 0.5, self.__tile_y)
-        elif self.__direction == 270:
-            return not wall_at(self.__tile_x, self.__tile_y + 0.5)
-        elif self.__direction == 90:
-            return not wall_at(self.__tile_x, self.__tile_y - 0.5)
-        else:
-            return False
-
-    def turn_off(self):
-        global TILE_WIDTH
-
-        if self.is_alive:
-            self.wait()
-            self.is_alive = False
-            self.__array = replace_2d(self.__array, YELLOW, L_GREY)
-            self.scale_image(TILE_WIDTH)
-            print("am dead")
-
-    def draw(self, screen):
+    def _draw(self, screen):
         screen.blit(self.__image, (self.__rect.x, self.__rect.y))
 
     # https://medium.com/@mgarod/dynamically-add-a-method-to-a-class-in-python-c49204b85bd6
     def add_method(self):
+        """doc for add_method
+        https://medium.com/@mgarod/dynamically-add-a-method-to-a-class-in-python-c49204b85bd6"""
+
         def decorator(func):
             @wraps(func)
             def wrapper(self, *args, **kwargs):
@@ -368,10 +395,11 @@ class Robot(pygame.sprite.Sprite):
         return decorator
 
     def set_zoom_fps(self, fps):
+        """doc for set_zoom_fps"""
         self.__zoom_fps = fps
 
     def zoom(self, on):  # TODO: zooming is quirky
-
+        """doc for zoom"""
         if self.is_alive:
             self.wait()
             global FPS
@@ -385,7 +413,9 @@ class Robot(pygame.sprite.Sprite):
                 print("no longer zooming")
 
 
-class Beeper(pygame.sprite.Sprite):
+class _Beeper(pygame.sprite.Sprite):
+    """doc for beeper and constructor"""
+
     def __init__(self, x, y, num):
         super().__init__()
         global BEEPER_SURF
@@ -394,22 +424,22 @@ class Beeper(pygame.sprite.Sprite):
         self.num = num
         self.image = 0
         self.rect = 0
-        self.update_image()
+        self._update_image()
 
-    def inc(self):
+    def _inc(self):
         self.num += 1
-        self.update_image()
+        self._update_image()
 
-    def dec(self):
+    def _dec(self):
         global BEEPERS
         self.num -= 1
         if self.num < 1:
             BEEPERS.remove(self)
             self.kill()
         else:
-            self.update_image()
+            self._update_image()
 
-    def update_image(self):
+    def _update_image(self):
         global BEEPER_SURF
         self.image = BEEPER_SURF.copy()
         self.image.blit(
@@ -417,14 +447,16 @@ class Beeper(pygame.sprite.Sprite):
                                                                                               BLACK),
             ((0.475 if len(str(self.num)) == 1 else 0.45) * TILE_WIDTH, 0.425 * TILE_WIDTH))
         self.rect = self.image.get_rect()
-        self.rect.x = tile_to_point(self.tile_x - 0.5)
-        self.rect.y = tile_to_point(self.tile_y - 0.5)
+        self.rect.x = _tile_to_point(self.tile_x - 0.5)
+        self.rect.y = _tile_to_point(self.tile_y - 0.5)
 
-    def draw(self, screen):
+    def _draw(self, screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
 
 class World(object):
+    """doc for world and constructor"""
+
     # maybe add window size attributes
     def __init__(self, width, height, name="Karel J Robot", fps=4, beeper_pos=[], wall_pos=[]):
         global FPS, BEEPERS
@@ -460,6 +492,7 @@ class World(object):
 
     @classmethod  # constructor for loading a file
     def from_file(cls, filename):
+        """doc for from_file"""
         file = open(filename)
         width = 0
         height = 0
@@ -476,7 +509,7 @@ class World(object):
             elif l.startswith("size: "):
                 for i in range(6, len(l)):
                     if l[i] == '(':
-                        p = extract_vals_inside_parenthesis(l, i)
+                        p = _extract_vals_inside_parenthesis(l, i)
                         if len(p) == 2:
                             width = int(p[0])
                             height = int(p[1])
@@ -485,41 +518,45 @@ class World(object):
             elif l.startswith("beepers: "):
                 for i in range(9, len(l)):
                     if l[i] == '(':
-                        p = extract_vals_inside_parenthesis(l, i)
+                        p = _extract_vals_inside_parenthesis(l, i)
                         if len(p) == 3:
                             beepers.append((int(p[0]), int(p[1]), int(p[2])))
             elif l.startswith("walls: "):
                 for i in range(7, len(l)):
                     if l[i] == '(':
-                        p = extract_vals_inside_parenthesis(l, i)
+                        p = _extract_vals_inside_parenthesis(l, i)
                         if len(p) == 4:
                             walls.append((0 if p[0] == 'h' else 1, float(p[1]), float(p[2]), float(p[3])))
         file.close()
         return cls(width, height, name=name, fps=fps, beeper_pos=beepers, wall_pos=walls)
 
     def add_robots(self, *robots):
+        """doc for add_robots"""
         if self.__thread.is_alive():
-            continued_exception("[World] Cannot add robots while the world is running!")
+            _continued_exception("[World] Cannot add robots while the world is running!")
         else:
             for r in robots:
                 self.__robots.append(r)
                 print("[World] Added " + r.get_sleeve_color() + " Robot")
 
     def save_screenshot(self, filename="screenshot.jpg"):
+        """doc for save_screenshot"""
         if not filename.endswith(".jpg"):
             filename += ".jpg"
         if self.__thread.is_alive():
             pygame.image.save(self.__screen, filename)
             print("[World] Saved screenshot as \"" + filename + "\".")
         else:
-            continued_exception("[World] Cannot take screenshot until the world is running!")
+            _continued_exception("[World] Cannot take screenshot until the world is running!")
 
     def set_fps(self, fps):
+        """doc for set_fps"""
         global FPS
         FPS = fps
         print("[World] Changed FPS")
 
     def start(self):
+        """doc for start"""
         self.__thread.start()
 
     def __run(self):
@@ -535,15 +572,15 @@ class World(object):
         print("[World] Screen height is " + str(SCREEN_HEIGHT))
         self.__screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])  # add scaling
 
-        BEEPER_SURF = pygame.transform.scale(readable_pixarray_to_surface(numpy.array(BEEPER)),
+        BEEPER_SURF = pygame.transform.scale(_readable_pixarray_to_surface(numpy.array(BEEPER)),
                                              (TILE_WIDTH, TILE_WIDTH))
 
         print("[World] Scaling robots...")
         for r in self.__robots:
-            r.scale_image(TILE_WIDTH)
+            r._scale_image(TILE_WIDTH)
 
         for p in self.__beeper_pos:
-            BEEPERS.add(Beeper(p[0], p[1], p[2]))
+            BEEPERS.add(_Beeper(p[0], p[1], p[2]))
 
         print("[World] Generating background...")
         self.__background = pygame.Surface([SCREEN_WIDTH, SCREEN_HEIGHT])
@@ -561,8 +598,8 @@ class World(object):
 
         for w in self.__wall_pos:
             pygame.draw.line(self.__background, RED,
-                             (tile_to_point(w[1]), tile_to_point(w[2])),
-                             (tile_to_point(w[3] if w[0] == 0 else w[1]), tile_to_point(w[3] if w[0] == 1 else w[2])),
+                             (_tile_to_point(w[1]), _tile_to_point(w[2])),
+                             (_tile_to_point(w[3] if w[0] == 0 else w[1]), _tile_to_point(w[3] if w[0] == 1 else w[2])),
                              3)
             for i in range(0, int(abs(w[3] - w[1 if w[0] == 0 else 2]))):
                 # works no matter what order the walls are in
@@ -587,7 +624,7 @@ class World(object):
             any_robots_moved = False
             for r in self.__robots:
                 any_robots_moved = any_robots_moved or r.has_moved_this_frame
-                r.draw(self.__screen)
+                r._draw(self.__screen)
                 r.has_moved_this_frame = False
 
             if any_robots_moved:
