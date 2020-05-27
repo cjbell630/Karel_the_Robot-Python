@@ -1,8 +1,6 @@
 from src.karel_the_robot import World, Robot
 
 
-# TODO: terminal, then run pdoc --html karel_the_robot.py
-
 @Robot.add_method(Robot)
 def turn(Robot, x):
     x = (4 - (x % 4)) % 4
