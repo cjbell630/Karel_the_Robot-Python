@@ -1,5 +1,5 @@
 name: Example World
-size: (10 10)
 fps: 5
-beepers: (1 1 1) (2 1 1)
-walls: (h 3.5 1.5 1.5) (v 1.5 3.5 1.5)
+size: (10 9)
+beepers: (5 3 1) (2 6 8)
+walls: (h 1.5 2.5 8.5) (v 4.5 3.5 7.5)

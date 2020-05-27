@@ -127,7 +127,67 @@
 >In the event that a World stops too quickly and you are unable to see the end state, look for a file named "final_world_status.jpg". This is a screenshot of the world right before it ended.
 
 ##Setting up World Files##
->bwruge
+>World files should be located in the same directory as your code.
+>A World file consists of parameters and values.
+>General formatting is as follows:
+
+>>
+    parameter1: value
+    parameter2: value
+    ...
+
+>**IMPORTANT:** Strings and chars should **NOT** be quoted!
+
+>The following is a list of parameters and their specific formatting:
+
+>>###Required Parameters:###
+* **size** the width and height in tiles of the World
+    * Formatting: ```size: (w h)```
+    * **w (int)** the width in tiles of the World
+        * ```0 < w```
+    * **h (int)** the height in tiles of the World
+        * ```0 < h```
+
+>>###Optional Parameters:###
+* **beepers** the positions of Beepers in the World
+    * Formatting: ```beepers: (x y n) (x y n) (x y n)...```
+    * **x (int)** the x position of the Beeper cluster
+        * ```0 <= x < World.width```
+    * **y (int)** the y position of the Beeper cluster
+        * ```0 <= y < World.height```
+    * **n (int)** the number of Beepers in the Beeper cluster
+        * ```0 < n```
+* **walls** the positions of Walls in the World
+    * Formatting: ```walls: (o sx sy ev) (o sx sy ev) (o sx sy ev)...```
+    * **o (char)** ```h``` if the Wall is horizontal, ```v``` if the Wall is vertical
+        * ```o == {h, v}```
+    * **sx (int)** the starting x position of the Wall
+        * ```0 <= sx < World.width```
+    * **sy (int)** the starting y position of the Wall
+        * ```0 <= sy < World.height```
+    * **sy (int)** the ending x position of the Wall if ```o == h```, the ending y position of the Wall if ```o == v```
+* **name** the window name of the World
+    * Formatting: ```name: n```
+    * **n (str)** the window name of the World
+    * Default: ```Karel J Robot```
+* **fps** the FPS of the World
+    * Formatting: ```fps: fps```
+    * **fps (int)** the FPS of the World
+    * Default: ```4```
+
+>The following is an example World file:
+
+>>
+    name: Example World
+    fps: 5
+    size: (10 9)
+    beepers: (5 3 1) (2 6 8)
+    walls: (h 1.5 2.5 8.5) (v 4.5 3.5 7.5)
+
+>This file will produce the following World:
+
+>>![Example World Screenshot](https://cjbell630.github.io/example-world.jpg)
+
 
 ---
 
