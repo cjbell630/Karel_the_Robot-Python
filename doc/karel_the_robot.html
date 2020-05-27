@@ -151,7 +151,95 @@ karel.turn_left()
 </blockquote>
 <h2 id="setting-up-world-files">Setting up World Files</h2>
 <blockquote>
-<p>bwruge</p>
+<p>World files should be located in the same directory as your code.
+A World file consists of parameters and values.
+General formatting is as follows:</p>
+<blockquote>
+<pre><code>parameter1: value
+parameter2: value
+...
+</code></pre>
+</blockquote>
+<p><strong>IMPORTANT:</strong> Strings and chars should <strong>NOT</strong> be quoted!</p>
+<p>The following is a list of parameters and their specific formatting:</p>
+<blockquote>
+<h3 id="required-parameters">Required Parameters:</h3>
+<ul>
+<li><strong>size</strong> the width and height in tiles of the World<ul>
+<li>Formatting: <code>size: (w h)</code></li>
+<li><strong>w (int)</strong> the width in tiles of the World<ul>
+<li><code>0 &lt; w</code></li>
+</ul>
+</li>
+<li><strong>h (int)</strong> the height in tiles of the World<ul>
+<li><code>0 &lt; h</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="optional-parameters">Optional Parameters:</h3>
+<ul>
+<li><strong>beepers</strong> the positions of Beepers in the World<ul>
+<li>Formatting: <code>beepers: (x y n) (x y n) (x y n)...</code></li>
+<li><strong>x (int)</strong> the x position of the Beeper cluster<ul>
+<li><code>0 &lt;= x &lt; World.width</code></li>
+</ul>
+</li>
+<li><strong>y (int)</strong> the y position of the Beeper cluster<ul>
+<li><code>0 &lt;= y &lt; World.height</code></li>
+</ul>
+</li>
+<li><strong>n (int)</strong> the number of Beepers in the Beeper cluster<ul>
+<li><code>0 &lt; n</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>walls</strong> the positions of Walls in the World<ul>
+<li>Formatting: <code>walls: (o sx sy ev) (o sx sy ev) (o sx sy ev)...</code></li>
+<li><strong>o (char)</strong> <code>h</code> if the Wall is horizontal, <code>v</code> if the Wall is vertical<ul>
+<li><code>o == {h, v}</code></li>
+</ul>
+</li>
+<li><strong>sx (int)</strong> the starting x position of the Wall<ul>
+<li><code>0 &lt;= sx &lt; World.width</code></li>
+</ul>
+</li>
+<li><strong>sy (int)</strong> the starting y position of the Wall<ul>
+<li><code>0 &lt;= sy &lt; World.height</code></li>
+</ul>
+</li>
+<li><strong>sy (int)</strong> the ending x position of the Wall if <code>o == h</code>, the ending y position of the Wall if <code>o == v</code></li>
+</ul>
+</li>
+<li><strong>name</strong> the window name of the World<ul>
+<li>Formatting: <code>name: n</code></li>
+<li><strong>n (str)</strong> the window name of the World</li>
+<li>Default: <code>Karel J Robot</code></li>
+</ul>
+</li>
+<li><strong>fps</strong> the FPS of the World<ul>
+<li>Formatting: <code>fps: fps</code></li>
+<li><strong>fps (int)</strong> the FPS of the World</li>
+<li>Default: <code>4</code></li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<p>The following is an example World file:</p>
+<blockquote>
+<pre><code>name: Example World
+fps: 5
+size: (10 9)
+beepers: (5 3 1) (2 6 8)
+walls: (h 1.5 2.5 8.5) (v 4.5 3.5 7.5)
+</code></pre>
+</blockquote>
+<p>This file will produce the following World:</p>
+<blockquote>
+<p><img alt="Example World Screenshot" src="https://cjbell630.github.io/example-world.jpg"></p>
+</blockquote>
 </blockquote>
 <hr>
 <details class="source">
@@ -287,7 +375,67 @@ karel.turn_left()
 &gt;In the event that a World stops too quickly and you are unable to see the end state, look for a file named &#34;final_world_status.jpg&#34;. This is a screenshot of the world right before it ended.
 
 ##Setting up World Files##
-&gt;bwruge
+&gt;World files should be located in the same directory as your code.
+&gt;A World file consists of parameters and values.
+&gt;General formatting is as follows:
+
+&gt;&gt;
+    parameter1: value
+    parameter2: value
+    ...
+
+&gt;**IMPORTANT:** Strings and chars should **NOT** be quoted!
+
+&gt;The following is a list of parameters and their specific formatting:
+
+&gt;&gt;###Required Parameters:###
+* **size** the width and height in tiles of the World
+    * Formatting: ```size: (w h)```
+    * **w (int)** the width in tiles of the World
+        * ```0 &lt; w```
+    * **h (int)** the height in tiles of the World
+        * ```0 &lt; h```
+
+&gt;&gt;###Optional Parameters:###
+* **beepers** the positions of Beepers in the World
+    * Formatting: ```beepers: (x y n) (x y n) (x y n)...```
+    * **x (int)** the x position of the Beeper cluster
+        * ```0 &lt;= x &lt; World.width```
+    * **y (int)** the y position of the Beeper cluster
+        * ```0 &lt;= y &lt; World.height```
+    * **n (int)** the number of Beepers in the Beeper cluster
+        * ```0 &lt; n```
+* **walls** the positions of Walls in the World
+    * Formatting: ```walls: (o sx sy ev) (o sx sy ev) (o sx sy ev)...```
+    * **o (char)** ```h``` if the Wall is horizontal, ```v``` if the Wall is vertical
+        * ```o == {h, v}```
+    * **sx (int)** the starting x position of the Wall
+        * ```0 &lt;= sx &lt; World.width```
+    * **sy (int)** the starting y position of the Wall
+        * ```0 &lt;= sy &lt; World.height```
+    * **sy (int)** the ending x position of the Wall if ```o == h```, the ending y position of the Wall if ```o == v```
+* **name** the window name of the World
+    * Formatting: ```name: n```
+    * **n (str)** the window name of the World
+    * Default: ```Karel J Robot```
+* **fps** the FPS of the World
+    * Formatting: ```fps: fps```
+    * **fps (int)** the FPS of the World
+    * Default: ```4```
+
+&gt;The following is an example World file:
+
+&gt;&gt;
+    name: Example World
+    fps: 5
+    size: (10 9)
+    beepers: (5 3 1) (2 6 8)
+    walls: (h 1.5 2.5 8.5) (v 4.5 3.5 7.5)
+
+&gt;This file will produce the following World:
+
+&gt;&gt;![Example World Screenshot](https://cjbell630.github.io/example-world.jpg)
+
 
 ---
 
@@ -2195,7 +2343,11 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
 <li><a href="#importing">Importing</a></li>
 <li><a href="#creating-custom-methods">Creating Custom Methods</a></li>
 <li><a href="#using-worlds-within-code">Using Worlds within Code</a></li>
-<li><a href="#setting-up-world-files">Setting up World Files</a></li>
+<li><a href="#setting-up-world-files">Setting up World Files</a><ul>
+<li><a href="#required-parameters">Required Parameters:</a></li>
+<li><a href="#optional-parameters">Optional Parameters:</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <ul id="index">
