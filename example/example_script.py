@@ -1,7 +1,7 @@
 from src.karel_the_robot import World, Robot
 
 
-#TODO: terminal, then run pdoc --html karel_the_robot.py
+# TODO: terminal, then run pdoc --html karel_the_robot.py
 
 @Robot.add_method(Robot)
 def turn(Robot, x):
@@ -17,8 +17,44 @@ def move_x(Robot, x):
 
 
 world = World.from_file("example_world.txt")
-karel = Robot(0, 0, "East", 0)
+karel = Robot(4, 4, "East", 0)
 world.add_robots(karel)
 world.start()
 
-karel.turn
+karel.turn(2)
+karel.move_x(2)
+karel.turn(-1)
+karel.move_x(2)
+karel.pick_beeper()
+karel.pick_beeper()
+karel.pick_beeper()
+karel.pick_beeper()
+karel.pick_beeper()
+karel.pick_beeper()
+karel.pick_beeper()
+karel.pick_beeper()
+karel.turn(2)
+karel.move_x(3)
+karel.turn(1)
+karel.move_x(3)
+karel.pick_beeper()
+karel.turn(1)
+karel.move_x(1)
+karel.put_beeper()
+karel.move_x(1)
+karel.put_beeper()
+karel.move_x(1)
+karel.put_beeper()
+karel.move_x(1)
+karel.put_beeper()
+karel.move_x(1)
+karel.put_beeper()
+karel.turn(-1)
+karel.move_x(1)
+karel.put_beeper()
+karel.move_x(1)
+karel.put_beeper()
+karel.move_x(1)
+karel.put_beeper()
+karel.move_x(1)
+karel.put_beeper()
