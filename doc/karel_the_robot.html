@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
 <title>karel_the_robot API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Importing##
+&gt;When karel_the_robot.py is in the same path as your code …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,17 +21,285 @@
 <h1 class="title">Module <code>karel_the_robot</code></h1>
 </header>
 <section id="section-intro">
+<h2 id="importing">Importing</h2>
+<blockquote>
+<p>When karel_the_robot.py is in the same path as your code</p>
+<blockquote>
+<pre><code>from karel_the_robot import World, Robot
+</code></pre>
+</blockquote>
+<p>When karel_the_robot.py is a in a subdirectory</p>
+<blockquote>
+<pre><code>from subdir.karel_the_robot import World, Robot
+</code></pre>
+</blockquote>
+</blockquote>
+<h2 id="creating-custom-methods">Creating Custom Methods</h2>
+<blockquote>
+<p>To create custom methods, follow this format:</p>
+<blockquote>
+<pre><code>@Robot.add_method(Robot)
+def method_name(Robot):
+    # Custom code goes here
+</code></pre>
+</blockquote>
+<p>Everything shown above (except for the comment) must be present for the custom method to work.</p>
+<p>Within this new method, "Robot" can be used to call methods on the Robot using this method, as seen in the example below:</p>
+<blockquote>
+<pre><code>@Robot.add_method(Robot)
+def move_twice(Robot):
+    Robot.move()
+    Robot.move()
+</code></pre>
+</blockquote>
+<p>Multiple methods can be created by giving each one a full header, as seen in the example below:</p>
+<blockquote>
+<pre><code>@Robot.add_method(Robot)
+def move_twice(Robot):
+    Robot.move()
+    Robot.move()
+
+@Robot.add_method(Robot)
+def move_thrice(Robot):
+    Robot.move()
+    Robot.move()
+    Robot.move()
+</code></pre>
+</blockquote>
+<p>Parameters can be added after the required "Robot" parameter, as seen in the example below:</p>
+<blockquote>
+<pre><code>@Robot.add_method(Robot)
+def move_if_true(Robot, true_or_false):
+    if true_or_false == True:
+        Robot.move()
+</code></pre>
+</blockquote>
+<p>If the resulting method is called on a Robot, the "Robot" parameter will be automatically filled, as seen in the example below:</p>
+<blockquote>
+<pre><code>karel = Robot(0, 0, 0, 0)
+karel.move_if_true(True)
+
+# Result: karel moves once.
+</code></pre>
+</blockquote>
+<p>Methods are added to all members of the Robot class, as seen in the example below:</p>
+<blockquote>
+<pre><code>@Robot.add_method(Robot)
+def move_twice(Robot):
+    Robot.move()
+    Robot.move()
+
+karel = Robot(0, 0, 0, 0)
+warel = Robot(1, 1, 0, 0)
+
+karel.move_twice()
+warel.move_twice()
+
+# Result: karel and warel both move twice.
+</code></pre>
+</blockquote>
+<p><strong>IMPORTANT:</strong> <code>Robot.add_method()</code> is itself a method. This means that custom methods can only be used after their creation.</p>
+<p>To put it simply, this code <strong>works</strong>:</p>
+<blockquote>
+<pre><code>@Robot.add_method(Robot)
+def move_twice(Robot):
+    Robot.move()
+    Robot.move()
+
+karel = Robot(0, 0, 0, 0)
+karel.move_twice()
+</code></pre>
+</blockquote>
+<p>And this code <strong>doesn't work</strong>:</p>
+<blockquote>
+<pre><code>karel = Robot(0, 0, 0, 0)
+karel.move_twice()
+
+@Robot.add_method(Robot)
+def move_twice(Robot):
+    Robot.move()
+    Robot.move()
+</code></pre>
+</blockquote>
+</blockquote>
+<h2 id="using-worlds-within-code">Using Worlds within Code</h2>
+<blockquote>
+<p>There are multiple ways to create a World, as documented <a href="#karel_the_robot.World">here</a>.</p>
+<p>To add Robots to a World, use <a href="#karel_the_robot.World.add_robots"><code>World.add_robots()</code></a></p>
+<p>Once all Robots are added, call <a href="#karel_the_robot.World.start"><code>World.start()</code></a></p>
+<p>All code to be executed while the World is running should be placed below this line, as seen in the example below:</p>
+<blockquote>
+<pre><code>world = World.from_file("example_world.txt")
+karel = Robot(1, 1, 0, 0)
+world.add_robots(karel)
+world.start()
+
+karel.move()
+karel.turn_left()
+</code></pre>
+</blockquote>
+<p>Worlds automatically stop when:</p>
+<ul>
+<li>
+<p>all Robots have turned off</p>
+</li>
+<li>
+<p>no methods have been called on any Robot for 1 second</p>
+</li>
+</ul>
+<p>In the event that a World stops too quickly and you are unable to see the end state, look for a file named "final_world_status.jpg". This is a screenshot of the world right before it ended.</p>
+</blockquote>
+<h2 id="setting-up-world-files">Setting up World Files</h2>
+<blockquote>
+<p>bwruge</p>
+</blockquote>
+<hr>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import numpy
+<pre><code class="python">&#34;&#34;&#34;
+
+##Importing##
+&gt;When karel_the_robot.py is in the same path as your code
+
+&gt;&gt;
+    from karel_the_robot import World, Robot
+
+&gt;When karel_the_robot.py is a in a subdirectory
+
+&gt;&gt;
+    from subdir.karel_the_robot import World, Robot
+
+
+##Creating Custom Methods##
+&gt;To create custom methods, follow this format:
+
+&gt;&gt;
+    @Robot.add_method(Robot)
+    def method_name(Robot):
+        # Custom code goes here
+
+&gt;Everything shown above (except for the comment) must be present for the custom method to work.
+
+&gt;Within this new method, &#34;Robot&#34; can be used to call methods on the Robot using this method, as seen in the example below:
+
+&gt;&gt;
+    @Robot.add_method(Robot)
+    def move_twice(Robot):
+        Robot.move()
+        Robot.move()
+
+&gt;Multiple methods can be created by giving each one a full header, as seen in the example below:
+
+&gt;&gt;
+    @Robot.add_method(Robot)
+    def move_twice(Robot):
+        Robot.move()
+        Robot.move()
+&gt;&gt;
+    @Robot.add_method(Robot)
+    def move_thrice(Robot):
+        Robot.move()
+        Robot.move()
+        Robot.move()
+
+&gt;Parameters can be added after the required &#34;Robot&#34; parameter, as seen in the example below:
+
+&gt;&gt;
+    @Robot.add_method(Robot)
+    def move_if_true(Robot, true_or_false):
+        if true_or_false == True:
+            Robot.move()
+
+&gt;If the resulting method is called on a Robot, the &#34;Robot&#34; parameter will be automatically filled, as seen in the example below:
+
+&gt;&gt;
+    karel = Robot(0, 0, 0, 0)
+    karel.move_if_true(True)
+&gt;&gt;
+    # Result: karel moves once.
+
+&gt;Methods are added to all members of the Robot class, as seen in the example below:
+
+&gt;&gt;
+    @Robot.add_method(Robot)
+    def move_twice(Robot):
+        Robot.move()
+        Robot.move()
+&gt;&gt;
+    karel = Robot(0, 0, 0, 0)
+    warel = Robot(1, 1, 0, 0)
+&gt;&gt;
+    karel.move_twice()
+    warel.move_twice()
+&gt;&gt;
+    # Result: karel and warel both move twice.
+
+&gt;**IMPORTANT:** ```Robot.add_method()``` is itself a method. This means that custom methods can only be used after their creation.
+
+&gt;To put it simply, this code **works**:
+
+&gt;&gt;
+    @Robot.add_method(Robot)
+    def move_twice(Robot):
+        Robot.move()
+        Robot.move()
+&gt;&gt;
+    karel = Robot(0, 0, 0, 0)
+    karel.move_twice()
+
+&gt;And this code **doesn&#39;t work**:
+
+&gt;&gt;
+    karel = Robot(0, 0, 0, 0)
+    karel.move_twice()
+&gt;&gt;
+    @Robot.add_method(Robot)
+    def move_twice(Robot):
+        Robot.move()
+        Robot.move()
+
+##Using Worlds within Code##
+&gt;There are multiple ways to create a World, as documented [here](#karel_the_robot.World).
+
+&gt;To add Robots to a World, use [```World.add_robots()```](#karel_the_robot.World.add_robots)
+
+&gt;Once all Robots are added, call [```World.start()```](#karel_the_robot.World.start)
+
+&gt;All code to be executed while the World is running should be placed below this line, as seen in the example below:
+
+&gt;&gt;
+    world = World.from_file(&#34;example_world.txt&#34;)
+    karel = Robot(1, 1, 0, 0)
+    world.add_robots(karel)
+    world.start()
+&gt;&gt;
+    karel.move()
+    karel.turn_left()
+
+&gt;Worlds automatically stop when:
+
+&gt;* all Robots have turned off
+
+&gt;* no methods have been called on any Robot for 1 second
+
+&gt;In the event that a World stops too quickly and you are unable to see the end state, look for a file named &#34;final_world_status.jpg&#34;. This is a screenshot of the world right before it ended.
+
+##Setting up World Files##
+&gt;bwruge
+
+---
+
+&#34;&#34;&#34;
+
+import numpy
 import threading
 import time
-from functools import wraps
-from itertools import count
 import traceback
 import os
+from functools import wraps
+from itertools import count
 
 os.environ[&#39;PYGAME_HIDE_SUPPORT_PROMPT&#39;] = &#34;hide&#34;
 import pygame
@@ -63,7 +332,13 @@ PURPLE = (200, 0, 255)
 SLEEVE_COLORS = [
     (&#34;Green&#34;, GREEN), (&#34;Orange&#34;, ORANGE), (&#34;Pink&#34;, PINK), (&#34;Blue&#34;, TEAL), (&#34;Purple&#34;, PURPLE)
 ]
-&#34;&#34;&#34;SLEEVE_COLORS documentation&#34;&#34;&#34;
+
+DIRECTIONS = {
+    &#34;North&#34;: 90,
+    &#34;South&#34;: 270,
+    &#34;East&#34;: 0,
+    &#34;West&#34;: 180
+}
 
 KAREL_ON = numpy.array([
     [CLR, CLR, CLR, CLR, CLR, CLR, BLACK, BLACK, BLACK, BLACK, CLR, CLR, CLR, BLACK, BLACK, BLACK, BLACK, CLR, CLR, CLR,
@@ -164,7 +439,7 @@ BEEPER = [
 BEEPER_SURF = 0
 
 
-def continued_exception(text):
+def _continued_exception(text):
     try:
         raise Exception(text)
     except Exception as exc:
@@ -173,7 +448,7 @@ def continued_exception(text):
         traceback.print_exception(Exception, exc, None, limit=-1)
 
 
-def replace_2d(array, value, replacement):
+def _replace_2d(array, value, replacement):
     array = array.copy()
     for x in range(0, len(array)):
         for y in range(0, len(array[x])):
@@ -182,7 +457,7 @@ def replace_2d(array, value, replacement):
     return array
 
 
-def readable_pixarray_to_surface(array):
+def _readable_pixarray_to_surface(array):
     # array = array.swapaxes(0, 1)
     surf = pygame.Surface(array.shape[0:2], pygame.SRCALPHA).convert()
     pygame.surfarray.blit_array(surf, array)
@@ -190,17 +465,17 @@ def readable_pixarray_to_surface(array):
     return surf
 
 
-def tile_to_point(tile):
+def _tile_to_point(tile):
     global TILE_WIDTH
     return (tile + 0.5) * TILE_WIDTH
 
 
-def point_to_tile(point):
+def _point_to_tile(point):
     global TILE_WIDTH
     return (point / TILE_WIDTH) - 0.5
 
 
-def wall_at(tile_x, tile_y):
+def _wall_at(tile_x, tile_y):
     global WALLS
     for w in WALLS:
         if w[0] == tile_x and w[1] == tile_y:
@@ -208,7 +483,7 @@ def wall_at(tile_x, tile_y):
     return False
 
 
-def extract_vals_inside_parenthesis(string, open_parenthesis_index):
+def _extract_vals_inside_parenthesis(string, open_parenthesis_index):
     p = []
     temp = &#34;&#34;
     count = open_parenthesis_index + 1
@@ -225,24 +500,33 @@ def extract_vals_inside_parenthesis(string, open_parenthesis_index):
     return p
 
 
-&#34;&#34;&#34;text above class declaration&#34;&#34;&#34;
-
-
 class Robot(pygame.sprite.Sprite):
-    &#34;&#34;&#34;documentation for Robot
-    
-
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Creates a new Robot and stores information about it.
+##Required Parameters:##
+* **x (int)** the starting x position of the Robot
+    * ```0 &lt;= x &lt; World.width```
+* **y (int)** the starting y position of the Robot
+    * ```0 &lt;= y &lt; World.height```
+* **direction (str)** the starting direction of the Robot
+    * ```direction == {&#34;North&#34;, &#34;South&#34;, &#34;East&#34;, &#34;West&#34;}```
+* **num_of_beepers (int)** the starting number of beepers of the Robot
+    * ```0 &lt;= num_of_beepers```
+##Optional Parameters:##
+* **color (int)** the sleeve color of the Robot
+    * ```0 &lt; color &lt; 4```
+    * Current colors: ```[Green, Orange, Pink, Teal, Purple]```
+    * Colors are automatically assigned based on the order Robots are added to the World.
+&#34;&#34;&#34;
     __ids = count(0)
 
-    def __init__(self, x, y, direction, num_of_beepers, color=-1):  # color is an int, maybe add string colors eventually
+    def __init__(self, x, y, direction, num_of_beepers, color=-1):
+        # color is an int, maybe add string colors eventually
         super().__init__()
         self.id = next(self.__ids)
-        &#34;&#34;&#34;documentation for self.id&#34;&#34;&#34;
         self.__color = SLEEVE_COLORS[(self.id if color == -1 else color) % len(SLEEVE_COLORS)]
         self.__tile_x = x
         self.__tile_y = y
-        self.__direction = direction
+        self.__direction = DIRECTIONS[direction]
         self.__beepers = num_of_beepers
         self.has_moved_this_frame = True
         self.__image = 0
@@ -250,24 +534,26 @@ class Robot(pygame.sprite.Sprite):
         self.is_alive = True
         self.__prev_fps = 4
         self.__zoom_fps = 20
-        # self.array = numpy.where(KAREL_ON == , self.__color, KAREL_ON)
-        self.__array = replace_2d(KAREL_ON, GREEN, self.__color[1])
+        self.__array = _replace_2d(KAREL_ON, GREEN, self.__color[1])
 
         print(&#34;[&#34; + self.__color[0] + &#34; Robot] Initializing...&#34;)
 
-    def scale_image(self, width):
-        &#34;&#34;&#34;documentation for scale_image&#34;&#34;&#34;
+    def _scale_image(self, width):
         self.__image = pygame.transform.rotate(
-            pygame.transform.scale(readable_pixarray_to_surface(self.__array), (width, width)),
+            pygame.transform.scale(_readable_pixarray_to_surface(self.__array), (width, width)),
             self.__direction)
         self.__rect = self.__image.get_rect()
-        self.__rect.x = tile_to_point(self.__tile_x - 0.5)
-        self.__rect.y = tile_to_point(self.__tile_y - 0.5)
+        self.__rect.x = _tile_to_point(self.__tile_x - 0.5)
+        self.__rect.y = _tile_to_point(self.__tile_y - 0.5)
 
     def get_sleeve_color(self):
+        &#34;&#34;&#34;Returns the sleeve color of the Robot.\n
+        **return type:** ```str```
+        &#34;&#34;&#34;
         return self.__color[0]
 
     def turn_left(self):
+        &#34;&#34;&#34;Rotates the Robot left 90 degrees.&#34;&#34;&#34;
         if self.is_alive:
             self.wait()
             self.__image = pygame.transform.rotate(self.__image, 90)
@@ -275,7 +561,9 @@ class Robot(pygame.sprite.Sprite):
             self.has_moved_this_frame = True
 
     def move(self):
-
+        &#34;&#34;&#34;Moves the Robot forward one space.\n
+        Will not move into Walls or the border of the stage.
+        &#34;&#34;&#34;
         if self.is_alive:
             self.wait()
             if self.front_is_clear():
@@ -292,80 +580,132 @@ class Robot(pygame.sprite.Sprite):
                     self.__rect.y -= TILE_WIDTH
                     self.__tile_y -= 1
             else:
-                continued_exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I ran into a wall! &#34;)
+                _continued_exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I ran into a wall! &#34;)
                 self.turn_off()
 
             print(&#34;tried to move&#34;)
             self.has_moved_this_frame = True
 
     def pick_beeper(self):
+        &#34;&#34;&#34;Makes the Robot pick up a single Beeper if it is standing on one.\n
+        If it is not standing on any Beepers, it will cause an error and turn off.
+        &#34;&#34;&#34;
         global BEEPERS
-
         if self.is_alive:
             self.wait()
             beepers_at_pos = [b for b in BEEPERS if b.__tile_x == self.__tile_x and b.__tile_y == self.__tile_y]
             if len(beepers_at_pos) &gt; 0:
-                beepers_at_pos[0].dec()
+                beepers_at_pos[0]._dec()
                 self.__beepers += 1
             self.has_moved_this_frame = True
 
     def put_beeper(self):
+        &#34;&#34;&#34;Makes the Robot put down up a single Beeper in the space it is standing on.\n
+        If it does not have any Beepers, it will cause an error and turn off.
+        &#34;&#34;&#34;
         global BEEPERS
-
         if self.is_alive:
             self.wait()
             if self.has_any_beepers():
                 beepers_at_pos = [b for b in BEEPERS if b.tile_x == self.__tile_x and b.tile_y == self.__tile_y]
                 self.__beepers -= 1
                 if len(beepers_at_pos) &gt; 0:
-                    beepers_at_pos[0].inc()
+                    beepers_at_pos[0]._inc()
                 else:
-                    BEEPERS.add(Beeper(self.__tile_x, self.__tile_y, 1))
+                    BEEPERS.add(_Beeper(self.__tile_x, self.__tile_y, 1))
             else:
                 # raise Exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I don&#39;t have any beepers! &#34;)
-                continued_exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I don&#39;t have any beepers! &#34;)
+                _continued_exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I don&#39;t have any beepers! &#34;)
                 self.turn_off()
 
             print(&#34;tried to put beeper&#34; + str(self.__beepers))
             self.has_moved_this_frame = True
 
+    def has_any_beepers(self):
+        &#34;&#34;&#34;Returns True if the Robot has at least 1 Beeper, and False if not.\n
+        **return type:** ```bool```
+        &#34;&#34;&#34;
+        return self.__beepers &gt; 0
+
+    def front_is_clear(self): #TODO: maybe invert
+        &#34;&#34;&#34;Returns True if there are no walls directly in front of the Robot, and False if there are.\n
+        **return type:** ```bool```
+        &#34;&#34;&#34;
+        if self.__direction == 0:
+            return not _wall_at(self.__tile_x + 0.5, self.__tile_y)
+        elif self.__direction == 180:
+            return not _wall_at(self.__tile_x - 0.5, self.__tile_y)
+        elif self.__direction == 270:
+            return not _wall_at(self.__tile_x, self.__tile_y + 0.5)
+        elif self.__direction == 90:
+            return not _wall_at(self.__tile_x, self.__tile_y - 0.5)
+        else:
+            return False
+
+    def facing_north(self):
+        &#34;&#34;&#34;Returns True if the Robot is facing North, and False if not.\n
+        **return type:** ```bool```
+        &#34;&#34;&#34;
+        return self.__direction == 90
+
+    def facing_south(self):
+        &#34;&#34;&#34;Returns True if the Robot is facing South, and False if not.\n
+        **return type:** ```bool```
+        &#34;&#34;&#34;
+        return self.__direction == 270
+
+    def facing_east(self):
+        &#34;&#34;&#34;Returns True if the Robot is facing East, and False if not.\n
+        **return type:** ```bool```
+        &#34;&#34;&#34;
+        return self.__direction == 0
+
+    def facing_west(self):
+        &#34;&#34;&#34;Returns True if the Robot is facing West, and False if not.\n
+        **return type:** ```bool```
+        &#34;&#34;&#34;
+        return self.__direction == 180
+
+    def standing_on_any_beepers(self):
+        &#34;&#34;&#34;Returns True if the Robot is standing on at least 1 Beeper, and False if not.\n
+        **return type:** ```bool```
+        &#34;&#34;&#34;
+        return len([b for b in BEEPERS if b.__tile_x == self.__tile_x and b.__tile_y == self.__tile_y]) &gt; 0
+
+    def standing_on_any_robots(self):
+        &#34;&#34;&#34;##**NOT IMPLEMENTED YET**##
+        Returns True if the Robot is standing on at least 1 other Robot, and False if not.\n
+        **return type:** ```bool```
+        &#34;&#34;&#34;
+        return False
+
+    def turn_off(self):
+        &#34;&#34;&#34;Turns off the Robot.\n
+        After this method is called, no more commands may be called on this Robot.&#34;&#34;&#34;
+        global TILE_WIDTH
+        if self.is_alive:
+            self.wait()
+            self.is_alive = False
+            self.__array = _replace_2d(self.__array, YELLOW, L_GREY)
+            self._scale_image(TILE_WIDTH)
+            print(&#34;am dead&#34;)
+
     def wait(self):
+        &#34;&#34;&#34;Makes the Robot freeze for a single frame.&#34;&#34;&#34;
         global FPS
         if self.is_alive:  # prevents commands from being run before the loop checks for dead robots, putting it in an infinite loop
             while self.has_moved_this_frame:
                 # print(&#34;waiting for frame&#34;)
                 time.sleep(1.0 / FPS)
 
-    def has_any_beepers(self):
-        return self.__beepers &gt; 0
-
-    def front_is_clear(self):
-        if self.__direction == 0:
-            return not wall_at(self.__tile_x + 0.5, self.__tile_y)
-        elif self.__direction == 180:
-            return not wall_at(self.__tile_x - 0.5, self.__tile_y)
-        elif self.__direction == 270:
-            return not wall_at(self.__tile_x, self.__tile_y + 0.5)
-        elif self.__direction == 90:
-            return not wall_at(self.__tile_x, self.__tile_y - 0.5)
-        else:
-            return False
-
-    def turn_off(self):
-        global TILE_WIDTH
-
-        if self.is_alive:
-            self.wait()
-            self.is_alive = False
-            self.__array = replace_2d(self.__array, YELLOW, L_GREY)
-            self.scale_image(TILE_WIDTH)
-            print(&#34;am dead&#34;)
-
-    def draw(self, screen):
+    def _draw(self, screen):
         screen.blit(self.__image, (self.__rect.x, self.__rect.y))
 
     # https://medium.com/@mgarod/dynamically-add-a-method-to-a-class-in-python-c49204b85bd6
     def add_method(self):
+        &#34;&#34;&#34;[[Source]](https://medium.com/@mgarod/dynamically-add-a-method-to-a-class-in-python-c49204b85bd6)\n
+        **See [Creating Custom Methods](#creating-custom-methods) for more information.**
+        &#34;&#34;&#34;
         def decorator(func):
             @wraps(func)
             def wrapper(self, *args, **kwargs):
@@ -378,10 +718,23 @@ class Robot(pygame.sprite.Sprite):
         return decorator
 
     def set_zoom_fps(self, fps):
+        &#34;&#34;&#34;**ADVANCED USERS ONLY**\n
+Sets the speed for the Robot to use when zooming.\n
+
+##Required Parameters:##
+
+* **fps (int)** the fps to use when zooming
+    * ```0 &lt; fps```
+        &#34;&#34;&#34;
         self.__zoom_fps = fps
 
     def zoom(self, on):  # TODO: zooming is quirky
-
+        &#34;&#34;&#34;**ADVANCED USERS ONLY**\n
+Makes the Robot start zooming if True, and makes the Robot stop zooming if False.\n
+##Required Parameters:##
+* **on (bool)** True if on, False if not
+    * ```on == {True, False}```
+        &#34;&#34;&#34;
         if self.is_alive:
             self.wait()
             global FPS
@@ -395,7 +748,9 @@ class Robot(pygame.sprite.Sprite):
                 print(&#34;no longer zooming&#34;)
 
 
-class Beeper(pygame.sprite.Sprite):
+class _Beeper(pygame.sprite.Sprite):
+    &#34;&#34;&#34;doc for beeper and constructor&#34;&#34;&#34;
+
     def __init__(self, x, y, num):
         super().__init__()
         global BEEPER_SURF
@@ -404,22 +759,22 @@ class Beeper(pygame.sprite.Sprite):
         self.num = num
         self.image = 0
         self.rect = 0
-        self.update_image()
+        self._update_image()
 
-    def inc(self):
+    def _inc(self):
         self.num += 1
-        self.update_image()
+        self._update_image()
 
-    def dec(self):
+    def _dec(self):
         global BEEPERS
         self.num -= 1
         if self.num &lt; 1:
             BEEPERS.remove(self)
             self.kill()
         else:
-            self.update_image()
+            self._update_image()
 
-    def update_image(self):
+    def _update_image(self):
         global BEEPER_SURF
         self.image = BEEPER_SURF.copy()
         self.image.blit(
@@ -427,19 +782,42 @@ class Beeper(pygame.sprite.Sprite):
                                                                                               BLACK),
             ((0.475 if len(str(self.num)) == 1 else 0.45) * TILE_WIDTH, 0.425 * TILE_WIDTH))
         self.rect = self.image.get_rect()
-        self.rect.x = tile_to_point(self.tile_x - 0.5)
-        self.rect.y = tile_to_point(self.tile_y - 0.5)
+        self.rect.x = _tile_to_point(self.tile_x - 0.5)
+        self.rect.y = _tile_to_point(self.tile_y - 0.5)
 
-    def draw(self, screen):
+    def _draw(self, screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
 
 class World(object):
+    &#34;&#34;&#34;Creates a new World and stores information about it.
+##Required Parameters:##
+* **width (int)** the number of tiles the World should be horizontally
+    * ```0 &lt; width```
+* **height (int)** the number of tiles the World should be vertically
+    * ```0 &lt; height```
+##Optional Parameters:##
+* **name (str)** the window name of the World
+    * Default: ```&#34;Karel J Robot&#34;```
+* **fps (int)** the FPS of the World
+    * ```0 &lt; fps```
+    * Default: ```4```
+* Other parameters exist but should only be used internally.
+&#34;&#34;&#34;
+
     # maybe add window size attributes
     def __init__(self, width, height, name=&#34;Karel J Robot&#34;, fps=4, beeper_pos=[], wall_pos=[]):
         global FPS, BEEPERS
         self.IDEAL_HEIGHT = 700
+        &#34;&#34;&#34;####**CHANGE THIS VALUE DEPENDING ON THE DEVICE THIS SCRIPT IS RUNNING ON**####
+        &gt;This is the maximum number of pixels the World window can take up vertically.\n
+        &gt;Check your monitor resolution for the best results.\n
+        &gt;* Ideal value for Repl.it: 600&#34;&#34;&#34;
         self.IDEAL_WIDTH = 900
+        &#34;&#34;&#34;####**CHANGE THIS VALUE DEPENDING ON THE DEVICE THIS SCRIPT IS RUNNING ON**####
+        &gt;This is the maximum number of pixels the World window can take up horizontally.\n
+        &gt;Check your monitor resolution for the best results.\n
+        &gt;* Ideal value for Repl.it: 800&#34;&#34;&#34;
         FPS = fps
 
         self.__width = width
@@ -462,6 +840,11 @@ class World(object):
 
     @classmethod  # constructor for loading a file
     def from_file(cls, filename):
+        &#34;&#34;&#34;Creates a World from a file.
+##Required Parameters:##
+* **filename (str)** the file name of the World to be loaded, including the file type
+See [Setting up World Files](#setting-up-world-files) for information on setting up World files.
+&#34;&#34;&#34;
         file = open(filename)
         width = 0
         height = 0
@@ -478,7 +861,7 @@ class World(object):
             elif l.startswith(&#34;size: &#34;):
                 for i in range(6, len(l)):
                     if l[i] == &#39;(&#39;:
-                        p = extract_vals_inside_parenthesis(l, i)
+                        p = _extract_vals_inside_parenthesis(l, i)
                         if len(p) == 2:
                             width = int(p[0])
                             height = int(p[1])
@@ -487,42 +870,68 @@ class World(object):
             elif l.startswith(&#34;beepers: &#34;):
                 for i in range(9, len(l)):
                     if l[i] == &#39;(&#39;:
-                        p = extract_vals_inside_parenthesis(l, i)
+                        p = _extract_vals_inside_parenthesis(l, i)
                         if len(p) == 3:
                             beepers.append((int(p[0]), int(p[1]), int(p[2])))
             elif l.startswith(&#34;walls: &#34;):
                 for i in range(7, len(l)):
                     if l[i] == &#39;(&#39;:
-                        p = extract_vals_inside_parenthesis(l, i)
+                        p = _extract_vals_inside_parenthesis(l, i)
                         if len(p) == 4:
                             walls.append((0 if p[0] == &#39;h&#39; else 1, float(p[1]), float(p[2]), float(p[3])))
         file.close()
         return cls(width, height, name=name, fps=fps, beeper_pos=beepers, wall_pos=walls)
 
     def add_robots(self, *robots):
+        &#34;&#34;&#34;Adds Robots to the World.
+##Required Parameters:##
+* **robots (Robot...)** any Robots to be added to the World
+See [Using Worlds within Code](#using-worlds-within-code) for more detailed information.
+&#34;&#34;&#34;
         if self.__thread.is_alive():
-            continued_exception(&#34;[World] Cannot add robots while the world is running!&#34;)
+            _continued_exception(&#34;[World] Cannot add robots while the world is running!&#34;)
         else:
             for r in robots:
                 self.__robots.append(r)
                 print(&#34;[World] Added &#34; + r.get_sleeve_color() + &#34; Robot&#34;)
 
     def save_screenshot(self, filename=&#34;screenshot.jpg&#34;):
+        &#34;&#34;&#34;Saves a screenshot of the World.
+##Optional Parameters:##
+* **filename (str)** the desired filename of the screenshot
+    * Default: ```&#34;screenshot.jpg&#34;```
+    * ```.jpg``` will automatically be added to the end of the filename if it is not there already
+&#34;&#34;&#34;
         if not filename.endswith(&#34;.jpg&#34;):
             filename += &#34;.jpg&#34;
         if self.__thread.is_alive():
             pygame.image.save(self.__screen, filename)
             print(&#34;[World] Saved screenshot as \&#34;&#34; + filename + &#34;\&#34;.&#34;)
         else:
-            continued_exception(&#34;[World] Cannot take screenshot until the world is running!&#34;)
+            _continued_exception(&#34;[World] Cannot take screenshot until the World is running!&#34;)
 
     def set_fps(self, fps):
+        &#34;&#34;&#34;Sets the FPS of the World.\n
+**IMPORTANT:** Can only be called before [```World.start()```](#karel_the_robot.World.start) is called.
+##Required Parameters:##
+* **fps (int)** the FPS for the World to run at
+    * ```0 &lt; fps```
+&#34;&#34;&#34;
         global FPS
-        FPS = fps
-        print(&#34;[World] Changed FPS&#34;)
+        if self.__thread.is_alive():
+            _continued_exception(&#34;[World] Cannot change FPS while the World is running!&#34;)
+        else:
+            FPS = fps
+            print(&#34;[World] Changed FPS.&#34;)
 
     def start(self):
-        self.__thread.start()
+        &#34;&#34;&#34;Starts the World.\n
+See [Using Worlds within Code](#using-worlds-within-code) for more detailed information.&#34;&#34;&#34;
+        if self.__thread.is_alive():
+            _continued_exception(&#34;[World] Cannot start the World while the World is already running!&#34;)
+        else:
+            self.__thread.start()
+
 
     def __run(self):
 
@@ -537,15 +946,15 @@ class World(object):
         print(&#34;[World] Screen height is &#34; + str(SCREEN_HEIGHT))
         self.__screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])  # add scaling
 
-        BEEPER_SURF = pygame.transform.scale(readable_pixarray_to_surface(numpy.array(BEEPER)),
+        BEEPER_SURF = pygame.transform.scale(_readable_pixarray_to_surface(numpy.array(BEEPER)),
                                              (TILE_WIDTH, TILE_WIDTH))
 
         print(&#34;[World] Scaling robots...&#34;)
         for r in self.__robots:
-            r.scale_image(TILE_WIDTH)
+            r._scale_image(TILE_WIDTH)
 
         for p in self.__beeper_pos:
-            BEEPERS.add(Beeper(p[0], p[1], p[2]))
+            BEEPERS.add(_Beeper(p[0], p[1], p[2]))
 
         print(&#34;[World] Generating background...&#34;)
         self.__background = pygame.Surface([SCREEN_WIDTH, SCREEN_HEIGHT])
@@ -563,8 +972,8 @@ class World(object):
 
         for w in self.__wall_pos:
             pygame.draw.line(self.__background, RED,
-                             (tile_to_point(w[1]), tile_to_point(w[2])),
-                             (tile_to_point(w[3] if w[0] == 0 else w[1]), tile_to_point(w[3] if w[0] == 1 else w[2])),
+                             (_tile_to_point(w[1]), _tile_to_point(w[2])),
+                             (_tile_to_point(w[3] if w[0] == 0 else w[1]), _tile_to_point(w[3] if w[0] == 1 else w[2])),
                              3)
             for i in range(0, int(abs(w[3] - w[1 if w[0] == 0 else 2]))):
                 # works no matter what order the walls are in
@@ -589,7 +998,7 @@ class World(object):
             any_robots_moved = False
             for r in self.__robots:
                 any_robots_moved = any_robots_moved or r.has_moved_this_frame
-                r.draw(self.__screen)
+                r._draw(self.__screen)
                 r.has_moved_this_frame = False
 
             if any_robots_moved:
@@ -608,302 +1017,77 @@ class World(object):
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-variables">Global variables</h2>
-<dl>
-<dt id="karel_the_robot.SLEEVE_COLORS"><code class="name">var <span class="ident">SLEEVE_COLORS</span></code></dt>
-<dd>
-<div class="desc"><p>SLEEVE_COLORS documentation</p></div>
-</dd>
-</dl>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
-<dl>
-<dt id="karel_the_robot.continued_exception"><code class="name flex">
-<span>def <span class="ident">continued_exception</span></span>(<span>text)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def continued_exception(text):
-    try:
-        raise Exception(text)
-    except Exception as exc:
-        print(&#34;\n&#34;)
-        traceback.print_stack(limit=-1)
-        traceback.print_exception(Exception, exc, None, limit=-1)</code></pre>
-</details>
-</dd>
-<dt id="karel_the_robot.extract_vals_inside_parenthesis"><code class="name flex">
-<span>def <span class="ident">extract_vals_inside_parenthesis</span></span>(<span>string, open_parenthesis_index)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def extract_vals_inside_parenthesis(string, open_parenthesis_index):
-    p = []
-    temp = &#34;&#34;
-    count = open_parenthesis_index + 1
-    while count &lt; len(string):
-        if string[count] == &#39; &#39;:
-            p.append(temp)
-            temp = &#34;&#34;
-        elif string[count] == &#39;)&#39;:
-            p.append(temp)
-            return p
-        else:
-            temp += string[count]
-        count += 1
-    return p</code></pre>
-</details>
-</dd>
-<dt id="karel_the_robot.point_to_tile"><code class="name flex">
-<span>def <span class="ident">point_to_tile</span></span>(<span>point)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def point_to_tile(point):
-    global TILE_WIDTH
-    return (point / TILE_WIDTH) - 0.5</code></pre>
-</details>
-</dd>
-<dt id="karel_the_robot.readable_pixarray_to_surface"><code class="name flex">
-<span>def <span class="ident">readable_pixarray_to_surface</span></span>(<span>array)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def readable_pixarray_to_surface(array):
-    # array = array.swapaxes(0, 1)
-    surf = pygame.Surface(array.shape[0:2], pygame.SRCALPHA).convert()
-    pygame.surfarray.blit_array(surf, array)
-    surf.set_colorkey(CLR)
-    return surf</code></pre>
-</details>
-</dd>
-<dt id="karel_the_robot.replace_2d"><code class="name flex">
-<span>def <span class="ident">replace_2d</span></span>(<span>array, value, replacement)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def replace_2d(array, value, replacement):
-    array = array.copy()
-    for x in range(0, len(array)):
-        for y in range(0, len(array[x])):
-            if all(array[x][y] == value):
-                array[x][y] = replacement
-    return array</code></pre>
-</details>
-</dd>
-<dt id="karel_the_robot.tile_to_point"><code class="name flex">
-<span>def <span class="ident">tile_to_point</span></span>(<span>tile)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def tile_to_point(tile):
-    global TILE_WIDTH
-    return (tile + 0.5) * TILE_WIDTH</code></pre>
-</details>
-</dd>
-<dt id="karel_the_robot.wall_at"><code class="name flex">
-<span>def <span class="ident">wall_at</span></span>(<span>tile_x, tile_y)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def wall_at(tile_x, tile_y):
-    global WALLS
-    for w in WALLS:
-        if w[0] == tile_x and w[1] == tile_y:
-            return True
-    return False</code></pre>
-</details>
-</dd>
-</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="karel_the_robot.Beeper"><code class="flex name class">
-<span>class <span class="ident">Beeper</span></span>
-<span>(</span><span>x, y, num)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>simple base class for visible game objects</p>
-<p>pygame.sprite.Sprite(*groups): return Sprite</p>
-<p>The base class for visible game objects. Derived classes will want to
-override the Sprite.update() method and assign Sprite.image and Sprite.rect
-attributes.
-The initializer can accept any number of Group instances that
-the Sprite will become a member of.</p>
-<p>When subclassing the Sprite class, be sure to call the base initializer
-before adding the Sprite to Groups.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Beeper(pygame.sprite.Sprite):
-    def __init__(self, x, y, num):
-        super().__init__()
-        global BEEPER_SURF
-        self.tile_x = x
-        self.tile_y = y
-        self.num = num
-        self.image = 0
-        self.rect = 0
-        self.update_image()
-
-    def inc(self):
-        self.num += 1
-        self.update_image()
-
-    def dec(self):
-        global BEEPERS
-        self.num -= 1
-        if self.num &lt; 1:
-            BEEPERS.remove(self)
-            self.kill()
-        else:
-            self.update_image()
-
-    def update_image(self):
-        global BEEPER_SURF
-        self.image = BEEPER_SURF.copy()
-        self.image.blit(
-            pygame.font.Font(&#39;freesansbold.ttf&#39;, 10 if len(str(self.num)) == 1 else 8).render(str(self.num), True,
-                                                                                              BLACK),
-            ((0.475 if len(str(self.num)) == 1 else 0.45) * TILE_WIDTH, 0.425 * TILE_WIDTH))
-        self.rect = self.image.get_rect()
-        self.rect.x = tile_to_point(self.tile_x - 0.5)
-        self.rect.y = tile_to_point(self.tile_y - 0.5)
-
-    def draw(self, screen):
-        screen.blit(self.image, (self.rect.x, self.rect.y))</code></pre>
-</details>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li>pygame.sprite.Sprite</li>
-</ul>
-<h3>Methods</h3>
-<dl>
-<dt id="karel_the_robot.Beeper.dec"><code class="name flex">
-<span>def <span class="ident">dec</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def dec(self):
-    global BEEPERS
-    self.num -= 1
-    if self.num &lt; 1:
-        BEEPERS.remove(self)
-        self.kill()
-    else:
-        self.update_image()</code></pre>
-</details>
-</dd>
-<dt id="karel_the_robot.Beeper.draw"><code class="name flex">
-<span>def <span class="ident">draw</span></span>(<span>self, screen)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def draw(self, screen):
-    screen.blit(self.image, (self.rect.x, self.rect.y))</code></pre>
-</details>
-</dd>
-<dt id="karel_the_robot.Beeper.inc"><code class="name flex">
-<span>def <span class="ident">inc</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def inc(self):
-    self.num += 1
-    self.update_image()</code></pre>
-</details>
-</dd>
-<dt id="karel_the_robot.Beeper.update_image"><code class="name flex">
-<span>def <span class="ident">update_image</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def update_image(self):
-    global BEEPER_SURF
-    self.image = BEEPER_SURF.copy()
-    self.image.blit(
-        pygame.font.Font(&#39;freesansbold.ttf&#39;, 10 if len(str(self.num)) == 1 else 8).render(str(self.num), True,
-                                                                                          BLACK),
-        ((0.475 if len(str(self.num)) == 1 else 0.45) * TILE_WIDTH, 0.425 * TILE_WIDTH))
-    self.rect = self.image.get_rect()
-    self.rect.x = tile_to_point(self.tile_x - 0.5)
-    self.rect.y = tile_to_point(self.tile_y - 0.5)</code></pre>
-</details>
-</dd>
-</dl>
-</dd>
 <dt id="karel_the_robot.Robot"><code class="flex name class">
 <span>class <span class="ident">Robot</span></span>
 <span>(</span><span>x, y, direction, num_of_beepers, color=-1)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>documentation for Robot</p></div>
+<div class="desc"><p>Creates a new Robot and stores information about it.</p>
+<h2 id="required-parameters">Required Parameters:</h2>
+<ul>
+<li><strong>x (int)</strong> the starting x position of the Robot<ul>
+<li><code>0 &lt;= x &lt; World.width</code></li>
+</ul>
+</li>
+<li><strong>y (int)</strong> the starting y position of the Robot<ul>
+<li><code>0 &lt;= y &lt; World.height</code></li>
+</ul>
+</li>
+<li><strong>direction (str)</strong> the starting direction of the Robot<ul>
+<li><code>direction == {"North", "South", "East", "West"}</code></li>
+</ul>
+</li>
+<li><strong>num_of_beepers (int)</strong> the starting number of beepers of the Robot<ul>
+<li><code>0 &lt;= num_of_beepers</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="optional-parameters">Optional Parameters:</h2>
+<ul>
+<li><strong>color (int)</strong> the sleeve color of the Robot<ul>
+<li><code>0 &lt; color &lt; 4</code></li>
+<li>Current colors: <code>[Green, Orange, Pink, Teal, Purple]</code></li>
+<li>Colors are automatically assigned based on the order Robots are added to the World.</li>
+</ul>
+</li>
+</ul></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Robot(pygame.sprite.Sprite):
-    &#34;&#34;&#34;documentation for Robot
-    
-
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Creates a new Robot and stores information about it.
+##Required Parameters:##
+* **x (int)** the starting x position of the Robot
+    * ```0 &lt;= x &lt; World.width```
+* **y (int)** the starting y position of the Robot
+    * ```0 &lt;= y &lt; World.height```
+* **direction (str)** the starting direction of the Robot
+    * ```direction == {&#34;North&#34;, &#34;South&#34;, &#34;East&#34;, &#34;West&#34;}```
+* **num_of_beepers (int)** the starting number of beepers of the Robot
+    * ```0 &lt;= num_of_beepers```
+##Optional Parameters:##
+* **color (int)** the sleeve color of the Robot
+    * ```0 &lt; color &lt; 4```
+    * Current colors: ```[Green, Orange, Pink, Teal, Purple]```
+    * Colors are automatically assigned based on the order Robots are added to the World.
+&#34;&#34;&#34;
     __ids = count(0)
 
-    def __init__(self, x, y, direction, num_of_beepers, color=-1):  # color is an int, maybe add string colors eventually
+    def __init__(self, x, y, direction, num_of_beepers, color=-1):
+        # color is an int, maybe add string colors eventually
         super().__init__()
         self.id = next(self.__ids)
-        &#34;&#34;&#34;documentation for self.id&#34;&#34;&#34;
         self.__color = SLEEVE_COLORS[(self.id if color == -1 else color) % len(SLEEVE_COLORS)]
         self.__tile_x = x
         self.__tile_y = y
-        self.__direction = direction
+        self.__direction = DIRECTIONS[direction]
         self.__beepers = num_of_beepers
         self.has_moved_this_frame = True
         self.__image = 0
@@ -911,24 +1095,26 @@ before adding the Sprite to Groups.</p></div>
         self.is_alive = True
         self.__prev_fps = 4
         self.__zoom_fps = 20
-        # self.array = numpy.where(KAREL_ON == , self.__color, KAREL_ON)
-        self.__array = replace_2d(KAREL_ON, GREEN, self.__color[1])
+        self.__array = _replace_2d(KAREL_ON, GREEN, self.__color[1])
 
         print(&#34;[&#34; + self.__color[0] + &#34; Robot] Initializing...&#34;)
 
-    def scale_image(self, width):
-        &#34;&#34;&#34;documentation for scale_image&#34;&#34;&#34;
+    def _scale_image(self, width):
         self.__image = pygame.transform.rotate(
-            pygame.transform.scale(readable_pixarray_to_surface(self.__array), (width, width)),
+            pygame.transform.scale(_readable_pixarray_to_surface(self.__array), (width, width)),
             self.__direction)
         self.__rect = self.__image.get_rect()
-        self.__rect.x = tile_to_point(self.__tile_x - 0.5)
-        self.__rect.y = tile_to_point(self.__tile_y - 0.5)
+        self.__rect.x = _tile_to_point(self.__tile_x - 0.5)
+        self.__rect.y = _tile_to_point(self.__tile_y - 0.5)
 
     def get_sleeve_color(self):
+        &#34;&#34;&#34;Returns the sleeve color of the Robot.\n
+        **return type:** ```str```
+        &#34;&#34;&#34;
         return self.__color[0]
 
     def turn_left(self):
+        &#34;&#34;&#34;Rotates the Robot left 90 degrees.&#34;&#34;&#34;
         if self.is_alive:
             self.wait()
             self.__image = pygame.transform.rotate(self.__image, 90)
@@ -936,7 +1122,9 @@ before adding the Sprite to Groups.</p></div>
             self.has_moved_this_frame = True
 
     def move(self):
-
+        &#34;&#34;&#34;Moves the Robot forward one space.\n
+        Will not move into Walls or the border of the stage.
+        &#34;&#34;&#34;
         if self.is_alive:
             self.wait()
             if self.front_is_clear():
@@ -953,80 +1141,132 @@ before adding the Sprite to Groups.</p></div>
                     self.__rect.y -= TILE_WIDTH
                     self.__tile_y -= 1
             else:
-                continued_exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I ran into a wall! &#34;)
+                _continued_exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I ran into a wall! &#34;)
                 self.turn_off()
 
             print(&#34;tried to move&#34;)
             self.has_moved_this_frame = True
 
     def pick_beeper(self):
+        &#34;&#34;&#34;Makes the Robot pick up a single Beeper if it is standing on one.\n
+        If it is not standing on any Beepers, it will cause an error and turn off.
+        &#34;&#34;&#34;
         global BEEPERS
-
         if self.is_alive:
             self.wait()
             beepers_at_pos = [b for b in BEEPERS if b.__tile_x == self.__tile_x and b.__tile_y == self.__tile_y]
             if len(beepers_at_pos) &gt; 0:
-                beepers_at_pos[0].dec()
+                beepers_at_pos[0]._dec()
                 self.__beepers += 1
             self.has_moved_this_frame = True
 
     def put_beeper(self):
+        &#34;&#34;&#34;Makes the Robot put down up a single Beeper in the space it is standing on.\n
+        If it does not have any Beepers, it will cause an error and turn off.
+        &#34;&#34;&#34;
         global BEEPERS
-
         if self.is_alive:
             self.wait()
             if self.has_any_beepers():
                 beepers_at_pos = [b for b in BEEPERS if b.tile_x == self.__tile_x and b.tile_y == self.__tile_y]
                 self.__beepers -= 1
                 if len(beepers_at_pos) &gt; 0:
-                    beepers_at_pos[0].inc()
+                    beepers_at_pos[0]._inc()
                 else:
-                    BEEPERS.add(Beeper(self.__tile_x, self.__tile_y, 1))
+                    BEEPERS.add(_Beeper(self.__tile_x, self.__tile_y, 1))
             else:
                 # raise Exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I don&#39;t have any beepers! &#34;)
-                continued_exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I don&#39;t have any beepers! &#34;)
+                _continued_exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I don&#39;t have any beepers! &#34;)
                 self.turn_off()
 
             print(&#34;tried to put beeper&#34; + str(self.__beepers))
             self.has_moved_this_frame = True
 
+    def has_any_beepers(self):
+        &#34;&#34;&#34;Returns True if the Robot has at least 1 Beeper, and False if not.\n
+        **return type:** ```bool```
+        &#34;&#34;&#34;
+        return self.__beepers &gt; 0
+
+    def front_is_clear(self): #TODO: maybe invert
+        &#34;&#34;&#34;Returns True if there are no walls directly in front of the Robot, and False if there are.\n
+        **return type:** ```bool```
+        &#34;&#34;&#34;
+        if self.__direction == 0:
+            return not _wall_at(self.__tile_x + 0.5, self.__tile_y)
+        elif self.__direction == 180:
+            return not _wall_at(self.__tile_x - 0.5, self.__tile_y)
+        elif self.__direction == 270:
+            return not _wall_at(self.__tile_x, self.__tile_y + 0.5)
+        elif self.__direction == 90:
+            return not _wall_at(self.__tile_x, self.__tile_y - 0.5)
+        else:
+            return False
+
+    def facing_north(self):
+        &#34;&#34;&#34;Returns True if the Robot is facing North, and False if not.\n
+        **return type:** ```bool```
+        &#34;&#34;&#34;
+        return self.__direction == 90
+
+    def facing_south(self):
+        &#34;&#34;&#34;Returns True if the Robot is facing South, and False if not.\n
+        **return type:** ```bool```
+        &#34;&#34;&#34;
+        return self.__direction == 270
+
+    def facing_east(self):
+        &#34;&#34;&#34;Returns True if the Robot is facing East, and False if not.\n
+        **return type:** ```bool```
+        &#34;&#34;&#34;
+        return self.__direction == 0
+
+    def facing_west(self):
+        &#34;&#34;&#34;Returns True if the Robot is facing West, and False if not.\n
+        **return type:** ```bool```
+        &#34;&#34;&#34;
+        return self.__direction == 180
+
+    def standing_on_any_beepers(self):
+        &#34;&#34;&#34;Returns True if the Robot is standing on at least 1 Beeper, and False if not.\n
+        **return type:** ```bool```
+        &#34;&#34;&#34;
+        return len([b for b in BEEPERS if b.__tile_x == self.__tile_x and b.__tile_y == self.__tile_y]) &gt; 0
+
+    def standing_on_any_robots(self):
+        &#34;&#34;&#34;##**NOT IMPLEMENTED YET**##
+        Returns True if the Robot is standing on at least 1 other Robot, and False if not.\n
+        **return type:** ```bool```
+        &#34;&#34;&#34;
+        return False
+
+    def turn_off(self):
+        &#34;&#34;&#34;Turns off the Robot.\n
+        After this method is called, no more commands may be called on this Robot.&#34;&#34;&#34;
+        global TILE_WIDTH
+        if self.is_alive:
+            self.wait()
+            self.is_alive = False
+            self.__array = _replace_2d(self.__array, YELLOW, L_GREY)
+            self._scale_image(TILE_WIDTH)
+            print(&#34;am dead&#34;)
+
     def wait(self):
+        &#34;&#34;&#34;Makes the Robot freeze for a single frame.&#34;&#34;&#34;
         global FPS
         if self.is_alive:  # prevents commands from being run before the loop checks for dead robots, putting it in an infinite loop
             while self.has_moved_this_frame:
                 # print(&#34;waiting for frame&#34;)
                 time.sleep(1.0 / FPS)
 
-    def has_any_beepers(self):
-        return self.__beepers &gt; 0
-
-    def front_is_clear(self):
-        if self.__direction == 0:
-            return not wall_at(self.__tile_x + 0.5, self.__tile_y)
-        elif self.__direction == 180:
-            return not wall_at(self.__tile_x - 0.5, self.__tile_y)
-        elif self.__direction == 270:
-            return not wall_at(self.__tile_x, self.__tile_y + 0.5)
-        elif self.__direction == 90:
-            return not wall_at(self.__tile_x, self.__tile_y - 0.5)
-        else:
-            return False
-
-    def turn_off(self):
-        global TILE_WIDTH
-
-        if self.is_alive:
-            self.wait()
-            self.is_alive = False
-            self.__array = replace_2d(self.__array, YELLOW, L_GREY)
-            self.scale_image(TILE_WIDTH)
-            print(&#34;am dead&#34;)
-
-    def draw(self, screen):
+    def _draw(self, screen):
         screen.blit(self.__image, (self.__rect.x, self.__rect.y))
 
     # https://medium.com/@mgarod/dynamically-add-a-method-to-a-class-in-python-c49204b85bd6
     def add_method(self):
+        &#34;&#34;&#34;[[Source]](https://medium.com/@mgarod/dynamically-add-a-method-to-a-class-in-python-c49204b85bd6)\n
+        **See [Creating Custom Methods](#creating-custom-methods) for more information.**
+        &#34;&#34;&#34;
         def decorator(func):
             @wraps(func)
             def wrapper(self, *args, **kwargs):
@@ -1039,10 +1279,23 @@ before adding the Sprite to Groups.</p></div>
         return decorator
 
     def set_zoom_fps(self, fps):
+        &#34;&#34;&#34;**ADVANCED USERS ONLY**\n
+Sets the speed for the Robot to use when zooming.\n
+
+##Required Parameters:##
+
+* **fps (int)** the fps to use when zooming
+    * ```0 &lt; fps```
+        &#34;&#34;&#34;
         self.__zoom_fps = fps
 
     def zoom(self, on):  # TODO: zooming is quirky
-
+        &#34;&#34;&#34;**ADVANCED USERS ONLY**\n
+Makes the Robot start zooming if True, and makes the Robot stop zooming if False.\n
+##Required Parameters:##
+* **on (bool)** True if on, False if not
+    * ```on == {True, False}```
+        &#34;&#34;&#34;
         if self.is_alive:
             self.wait()
             global FPS
@@ -1059,25 +1312,22 @@ before adding the Sprite to Groups.</p></div>
 <ul class="hlist">
 <li>pygame.sprite.Sprite</li>
 </ul>
-<h3>Instance variables</h3>
-<dl>
-<dt id="karel_the_robot.Robot.id"><code class="name">var <span class="ident">id</span></code></dt>
-<dd>
-<div class="desc"><p>documentation for self.id</p></div>
-</dd>
-</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="karel_the_robot.Robot.add_method"><code class="name flex">
 <span>def <span class="ident">add_method</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p><a href="https://medium.com/@mgarod/dynamically-add-a-method-to-a-class-in-python-c49204b85bd6">[Source]</a></p>
+<p><strong>See <a href="#creating-custom-methods">Creating Custom Methods</a> for more information.</strong></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def add_method(self):
+    &#34;&#34;&#34;[[Source]](https://medium.com/@mgarod/dynamically-add-a-method-to-a-class-in-python-c49204b85bd6)\n
+    **See [Creating Custom Methods](#creating-custom-methods) for more information.**
+    &#34;&#34;&#34;
     def decorator(func):
         @wraps(func)
         def wrapper(self, *args, **kwargs):
@@ -1090,37 +1340,96 @@ before adding the Sprite to Groups.</p></div>
     return decorator</code></pre>
 </details>
 </dd>
-<dt id="karel_the_robot.Robot.draw"><code class="name flex">
-<span>def <span class="ident">draw</span></span>(<span>self, screen)</span>
+<dt id="karel_the_robot.Robot.facing_east"><code class="name flex">
+<span>def <span class="ident">facing_east</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns True if the Robot is facing East, and False if not.</p>
+<p><strong>return type:</strong> <code>bool</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def draw(self, screen):
-    screen.blit(self.__image, (self.__rect.x, self.__rect.y))</code></pre>
+<pre><code class="python">def facing_east(self):
+    &#34;&#34;&#34;Returns True if the Robot is facing East, and False if not.\n
+    **return type:** ```bool```
+    &#34;&#34;&#34;
+    return self.__direction == 0</code></pre>
+</details>
+</dd>
+<dt id="karel_the_robot.Robot.facing_north"><code class="name flex">
+<span>def <span class="ident">facing_north</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns True if the Robot is facing North, and False if not.</p>
+<p><strong>return type:</strong> <code>bool</code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def facing_north(self):
+    &#34;&#34;&#34;Returns True if the Robot is facing North, and False if not.\n
+    **return type:** ```bool```
+    &#34;&#34;&#34;
+    return self.__direction == 90</code></pre>
+</details>
+</dd>
+<dt id="karel_the_robot.Robot.facing_south"><code class="name flex">
+<span>def <span class="ident">facing_south</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns True if the Robot is facing South, and False if not.</p>
+<p><strong>return type:</strong> <code>bool</code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def facing_south(self):
+    &#34;&#34;&#34;Returns True if the Robot is facing South, and False if not.\n
+    **return type:** ```bool```
+    &#34;&#34;&#34;
+    return self.__direction == 270</code></pre>
+</details>
+</dd>
+<dt id="karel_the_robot.Robot.facing_west"><code class="name flex">
+<span>def <span class="ident">facing_west</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns True if the Robot is facing West, and False if not.</p>
+<p><strong>return type:</strong> <code>bool</code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def facing_west(self):
+    &#34;&#34;&#34;Returns True if the Robot is facing West, and False if not.\n
+    **return type:** ```bool```
+    &#34;&#34;&#34;
+    return self.__direction == 180</code></pre>
 </details>
 </dd>
 <dt id="karel_the_robot.Robot.front_is_clear"><code class="name flex">
 <span>def <span class="ident">front_is_clear</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns True if there are no walls directly in front of the Robot, and False if there are.</p>
+<p><strong>return type:</strong> <code>bool</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def front_is_clear(self):
+<pre><code class="python">def front_is_clear(self): #TODO: maybe invert
+    &#34;&#34;&#34;Returns True if there are no walls directly in front of the Robot, and False if there are.\n
+    **return type:** ```bool```
+    &#34;&#34;&#34;
     if self.__direction == 0:
-        return not wall_at(self.__tile_x + 0.5, self.__tile_y)
+        return not _wall_at(self.__tile_x + 0.5, self.__tile_y)
     elif self.__direction == 180:
-        return not wall_at(self.__tile_x - 0.5, self.__tile_y)
+        return not _wall_at(self.__tile_x - 0.5, self.__tile_y)
     elif self.__direction == 270:
-        return not wall_at(self.__tile_x, self.__tile_y + 0.5)
+        return not _wall_at(self.__tile_x, self.__tile_y + 0.5)
     elif self.__direction == 90:
-        return not wall_at(self.__tile_x, self.__tile_y - 0.5)
+        return not _wall_at(self.__tile_x, self.__tile_y - 0.5)
     else:
         return False</code></pre>
 </details>
@@ -1129,12 +1438,16 @@ before adding the Sprite to Groups.</p></div>
 <span>def <span class="ident">get_sleeve_color</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns the sleeve color of the Robot.</p>
+<p><strong>return type:</strong> <code>str</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_sleeve_color(self):
+    &#34;&#34;&#34;Returns the sleeve color of the Robot.\n
+    **return type:** ```str```
+    &#34;&#34;&#34;
     return self.__color[0]</code></pre>
 </details>
 </dd>
@@ -1142,12 +1455,16 @@ before adding the Sprite to Groups.</p></div>
 <span>def <span class="ident">has_any_beepers</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns True if the Robot has at least 1 Beeper, and False if not.</p>
+<p><strong>return type:</strong> <code>bool</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def has_any_beepers(self):
+    &#34;&#34;&#34;Returns True if the Robot has at least 1 Beeper, and False if not.\n
+    **return type:** ```bool```
+    &#34;&#34;&#34;
     return self.__beepers &gt; 0</code></pre>
 </details>
 </dd>
@@ -1155,13 +1472,16 @@ before adding the Sprite to Groups.</p></div>
 <span>def <span class="ident">move</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Moves the Robot forward one space.</p>
+<p>Will not move into Walls or the border of the stage.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def move(self):
-
+    &#34;&#34;&#34;Moves the Robot forward one space.\n
+    Will not move into Walls or the border of the stage.
+    &#34;&#34;&#34;
     if self.is_alive:
         self.wait()
         if self.front_is_clear():
@@ -1178,7 +1498,7 @@ before adding the Sprite to Groups.</p></div>
                 self.__rect.y -= TILE_WIDTH
                 self.__tile_y -= 1
         else:
-            continued_exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I ran into a wall! &#34;)
+            _continued_exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I ran into a wall! &#34;)
             self.turn_off()
 
         print(&#34;tried to move&#34;)
@@ -1189,19 +1509,22 @@ before adding the Sprite to Groups.</p></div>
 <span>def <span class="ident">pick_beeper</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Makes the Robot pick up a single Beeper if it is standing on one.</p>
+<p>If it is not standing on any Beepers, it will cause an error and turn off.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def pick_beeper(self):
+    &#34;&#34;&#34;Makes the Robot pick up a single Beeper if it is standing on one.\n
+    If it is not standing on any Beepers, it will cause an error and turn off.
+    &#34;&#34;&#34;
     global BEEPERS
-
     if self.is_alive:
         self.wait()
         beepers_at_pos = [b for b in BEEPERS if b.__tile_x == self.__tile_x and b.__tile_y == self.__tile_y]
         if len(beepers_at_pos) &gt; 0:
-            beepers_at_pos[0].dec()
+            beepers_at_pos[0]._dec()
             self.__beepers += 1
         self.has_moved_this_frame = True</code></pre>
 </details>
@@ -1210,74 +1533,111 @@ before adding the Sprite to Groups.</p></div>
 <span>def <span class="ident">put_beeper</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Makes the Robot put down up a single Beeper in the space it is standing on.</p>
+<p>If it does not have any Beepers, it will cause an error and turn off.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def put_beeper(self):
+    &#34;&#34;&#34;Makes the Robot put down up a single Beeper in the space it is standing on.\n
+    If it does not have any Beepers, it will cause an error and turn off.
+    &#34;&#34;&#34;
     global BEEPERS
-
     if self.is_alive:
         self.wait()
         if self.has_any_beepers():
             beepers_at_pos = [b for b in BEEPERS if b.tile_x == self.__tile_x and b.tile_y == self.__tile_y]
             self.__beepers -= 1
             if len(beepers_at_pos) &gt; 0:
-                beepers_at_pos[0].inc()
+                beepers_at_pos[0]._inc()
             else:
-                BEEPERS.add(Beeper(self.__tile_x, self.__tile_y, 1))
+                BEEPERS.add(_Beeper(self.__tile_x, self.__tile_y, 1))
         else:
             # raise Exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I don&#39;t have any beepers! &#34;)
-            continued_exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I don&#39;t have any beepers! &#34;)
+            _continued_exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I don&#39;t have any beepers! &#34;)
             self.turn_off()
 
         print(&#34;tried to put beeper&#34; + str(self.__beepers))
         self.has_moved_this_frame = True</code></pre>
 </details>
 </dd>
-<dt id="karel_the_robot.Robot.scale_image"><code class="name flex">
-<span>def <span class="ident">scale_image</span></span>(<span>self, width)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>documentation for scale_image</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def scale_image(self, width):
-    &#34;&#34;&#34;documentation for scale_image&#34;&#34;&#34;
-    self.__image = pygame.transform.rotate(
-        pygame.transform.scale(readable_pixarray_to_surface(self.__array), (width, width)),
-        self.__direction)
-    self.__rect = self.__image.get_rect()
-    self.__rect.x = tile_to_point(self.__tile_x - 0.5)
-    self.__rect.y = tile_to_point(self.__tile_y - 0.5)</code></pre>
-</details>
-</dd>
 <dt id="karel_the_robot.Robot.set_zoom_fps"><code class="name flex">
 <span>def <span class="ident">set_zoom_fps</span></span>(<span>self, fps)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p><strong>ADVANCED USERS ONLY</strong></p>
+<p>Sets the speed for the Robot to use when zooming.</p>
+<h2 id="required-parameters">Required Parameters:</h2>
+<ul>
+<li><strong>fps (int)</strong> the fps to use when zooming<ul>
+<li><code>0 &lt; fps</code></li>
+</ul>
+</li>
+</ul></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_zoom_fps(self, fps):
-    self.__zoom_fps = fps</code></pre>
+<pre><code class="python">    def set_zoom_fps(self, fps):
+        &#34;&#34;&#34;**ADVANCED USERS ONLY**\n
+Sets the speed for the Robot to use when zooming.\n
+
+##Required Parameters:##
+
+* **fps (int)** the fps to use when zooming
+    * ```0 &lt; fps```
+        &#34;&#34;&#34;
+        self.__zoom_fps = fps</code></pre>
+</details>
+</dd>
+<dt id="karel_the_robot.Robot.standing_on_any_beepers"><code class="name flex">
+<span>def <span class="ident">standing_on_any_beepers</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns True if the Robot is standing on at least 1 Beeper, and False if not.</p>
+<p><strong>return type:</strong> <code>bool</code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def standing_on_any_beepers(self):
+    &#34;&#34;&#34;Returns True if the Robot is standing on at least 1 Beeper, and False if not.\n
+    **return type:** ```bool```
+    &#34;&#34;&#34;
+    return len([b for b in BEEPERS if b.__tile_x == self.__tile_x and b.__tile_y == self.__tile_y]) &gt; 0</code></pre>
+</details>
+</dd>
+<dt id="karel_the_robot.Robot.standing_on_any_robots"><code class="name flex">
+<span>def <span class="ident">standing_on_any_robots</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="not-implemented-yet"><strong>NOT IMPLEMENTED YET</strong></h2>
+<p>Returns True if the Robot is standing on at least 1 other Robot, and False if not.</p>
+<p><strong>return type:</strong> <code>bool</code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def standing_on_any_robots(self):
+    &#34;&#34;&#34;##**NOT IMPLEMENTED YET**##
+    Returns True if the Robot is standing on at least 1 other Robot, and False if not.\n
+    **return type:** ```bool```
+    &#34;&#34;&#34;
+    return False</code></pre>
 </details>
 </dd>
 <dt id="karel_the_robot.Robot.turn_left"><code class="name flex">
 <span>def <span class="ident">turn_left</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Rotates the Robot left 90 degrees.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def turn_left(self):
+    &#34;&#34;&#34;Rotates the Robot left 90 degrees.&#34;&#34;&#34;
     if self.is_alive:
         self.wait()
         self.__image = pygame.transform.rotate(self.__image, 90)
@@ -1289,19 +1649,21 @@ before adding the Sprite to Groups.</p></div>
 <span>def <span class="ident">turn_off</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Turns off the Robot.</p>
+<p>After this method is called, no more commands may be called on this Robot.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def turn_off(self):
+    &#34;&#34;&#34;Turns off the Robot.\n
+    After this method is called, no more commands may be called on this Robot.&#34;&#34;&#34;
     global TILE_WIDTH
-
     if self.is_alive:
         self.wait()
         self.is_alive = False
-        self.__array = replace_2d(self.__array, YELLOW, L_GREY)
-        self.scale_image(TILE_WIDTH)
+        self.__array = _replace_2d(self.__array, YELLOW, L_GREY)
+        self._scale_image(TILE_WIDTH)
         print(&#34;am dead&#34;)</code></pre>
 </details>
 </dd>
@@ -1309,12 +1671,13 @@ before adding the Sprite to Groups.</p></div>
 <span>def <span class="ident">wait</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Makes the Robot freeze for a single frame.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def wait(self):
+    &#34;&#34;&#34;Makes the Robot freeze for a single frame.&#34;&#34;&#34;
     global FPS
     if self.is_alive:  # prevents commands from being run before the loop checks for dead robots, putting it in an infinite loop
         while self.has_moved_this_frame:
@@ -1326,24 +1689,37 @@ before adding the Sprite to Groups.</p></div>
 <span>def <span class="ident">zoom</span></span>(<span>self, on)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p><strong>ADVANCED USERS ONLY</strong></p>
+<p>Makes the Robot start zooming if True, and makes the Robot stop zooming if False.</p>
+<h2 id="required-parameters">Required Parameters:</h2>
+<ul>
+<li><strong>on (bool)</strong> True if on, False if not<ul>
+<li><code>on == {True, False}</code></li>
+</ul>
+</li>
+</ul></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def zoom(self, on):  # TODO: zooming is quirky
-
-    if self.is_alive:
-        self.wait()
-        global FPS
-        self.has_moved_this_frame = True
-        if on:
-            self.__prev_fps = FPS
-            FPS = self.__zoom_fps
-            print(&#34;ZOOM&#34;)
-        else:
-            FPS = self.__prev_fps
-            print(&#34;no longer zooming&#34;)</code></pre>
+<pre><code class="python">    def zoom(self, on):  # TODO: zooming is quirky
+        &#34;&#34;&#34;**ADVANCED USERS ONLY**\n
+Makes the Robot start zooming if True, and makes the Robot stop zooming if False.\n
+##Required Parameters:##
+* **on (bool)** True if on, False if not
+    * ```on == {True, False}```
+        &#34;&#34;&#34;
+        if self.is_alive:
+            self.wait()
+            global FPS
+            self.has_moved_this_frame = True
+            if on:
+                self.__prev_fps = FPS
+                FPS = self.__zoom_fps
+                print(&#34;ZOOM&#34;)
+            else:
+                FPS = self.__prev_fps
+                print(&#34;no longer zooming&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -1353,17 +1729,64 @@ before adding the Sprite to Groups.</p></div>
 <span>(</span><span>width, height, name='Karel J Robot', fps=4, beeper_pos=[], wall_pos=[])</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Creates a new World and stores information about it.</p>
+<h2 id="required-parameters">Required Parameters:</h2>
+<ul>
+<li><strong>width (int)</strong> the number of tiles the World should be horizontally<ul>
+<li><code>0 &lt; width</code></li>
+</ul>
+</li>
+<li><strong>height (int)</strong> the number of tiles the World should be vertically<ul>
+<li><code>0 &lt; height</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="optional-parameters">Optional Parameters:</h2>
+<ul>
+<li><strong>name (str)</strong> the window name of the World<ul>
+<li>Default: <code>"Karel J Robot"</code></li>
+</ul>
+</li>
+<li><strong>fps (int)</strong> the FPS of the World<ul>
+<li><code>0 &lt; fps</code></li>
+<li>Default: <code>4</code></li>
+</ul>
+</li>
+<li>Other parameters exist but should only be used internally.</li>
+</ul></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class World(object):
+    &#34;&#34;&#34;Creates a new World and stores information about it.
+##Required Parameters:##
+* **width (int)** the number of tiles the World should be horizontally
+    * ```0 &lt; width```
+* **height (int)** the number of tiles the World should be vertically
+    * ```0 &lt; height```
+##Optional Parameters:##
+* **name (str)** the window name of the World
+    * Default: ```&#34;Karel J Robot&#34;```
+* **fps (int)** the FPS of the World
+    * ```0 &lt; fps```
+    * Default: ```4```
+* Other parameters exist but should only be used internally.
+&#34;&#34;&#34;
+
     # maybe add window size attributes
     def __init__(self, width, height, name=&#34;Karel J Robot&#34;, fps=4, beeper_pos=[], wall_pos=[]):
         global FPS, BEEPERS
         self.IDEAL_HEIGHT = 700
+        &#34;&#34;&#34;####**CHANGE THIS VALUE DEPENDING ON THE DEVICE THIS SCRIPT IS RUNNING ON**####
+        &gt;This is the maximum number of pixels the World window can take up vertically.\n
+        &gt;Check your monitor resolution for the best results.\n
+        &gt;* Ideal value for Repl.it: 600&#34;&#34;&#34;
         self.IDEAL_WIDTH = 900
+        &#34;&#34;&#34;####**CHANGE THIS VALUE DEPENDING ON THE DEVICE THIS SCRIPT IS RUNNING ON**####
+        &gt;This is the maximum number of pixels the World window can take up horizontally.\n
+        &gt;Check your monitor resolution for the best results.\n
+        &gt;* Ideal value for Repl.it: 800&#34;&#34;&#34;
         FPS = fps
 
         self.__width = width
@@ -1386,6 +1809,11 @@ before adding the Sprite to Groups.</p></div>
 
     @classmethod  # constructor for loading a file
     def from_file(cls, filename):
+        &#34;&#34;&#34;Creates a World from a file.
+##Required Parameters:##
+* **filename (str)** the file name of the World to be loaded, including the file type
+See [Setting up World Files](#setting-up-world-files) for information on setting up World files.
+&#34;&#34;&#34;
         file = open(filename)
         width = 0
         height = 0
@@ -1402,7 +1830,7 @@ before adding the Sprite to Groups.</p></div>
             elif l.startswith(&#34;size: &#34;):
                 for i in range(6, len(l)):
                     if l[i] == &#39;(&#39;:
-                        p = extract_vals_inside_parenthesis(l, i)
+                        p = _extract_vals_inside_parenthesis(l, i)
                         if len(p) == 2:
                             width = int(p[0])
                             height = int(p[1])
@@ -1411,42 +1839,68 @@ before adding the Sprite to Groups.</p></div>
             elif l.startswith(&#34;beepers: &#34;):
                 for i in range(9, len(l)):
                     if l[i] == &#39;(&#39;:
-                        p = extract_vals_inside_parenthesis(l, i)
+                        p = _extract_vals_inside_parenthesis(l, i)
                         if len(p) == 3:
                             beepers.append((int(p[0]), int(p[1]), int(p[2])))
             elif l.startswith(&#34;walls: &#34;):
                 for i in range(7, len(l)):
                     if l[i] == &#39;(&#39;:
-                        p = extract_vals_inside_parenthesis(l, i)
+                        p = _extract_vals_inside_parenthesis(l, i)
                         if len(p) == 4:
                             walls.append((0 if p[0] == &#39;h&#39; else 1, float(p[1]), float(p[2]), float(p[3])))
         file.close()
         return cls(width, height, name=name, fps=fps, beeper_pos=beepers, wall_pos=walls)
 
     def add_robots(self, *robots):
+        &#34;&#34;&#34;Adds Robots to the World.
+##Required Parameters:##
+* **robots (Robot...)** any Robots to be added to the World
+See [Using Worlds within Code](#using-worlds-within-code) for more detailed information.
+&#34;&#34;&#34;
         if self.__thread.is_alive():
-            continued_exception(&#34;[World] Cannot add robots while the world is running!&#34;)
+            _continued_exception(&#34;[World] Cannot add robots while the world is running!&#34;)
         else:
             for r in robots:
                 self.__robots.append(r)
                 print(&#34;[World] Added &#34; + r.get_sleeve_color() + &#34; Robot&#34;)
 
     def save_screenshot(self, filename=&#34;screenshot.jpg&#34;):
+        &#34;&#34;&#34;Saves a screenshot of the World.
+##Optional Parameters:##
+* **filename (str)** the desired filename of the screenshot
+    * Default: ```&#34;screenshot.jpg&#34;```
+    * ```.jpg``` will automatically be added to the end of the filename if it is not there already
+&#34;&#34;&#34;
         if not filename.endswith(&#34;.jpg&#34;):
             filename += &#34;.jpg&#34;
         if self.__thread.is_alive():
             pygame.image.save(self.__screen, filename)
             print(&#34;[World] Saved screenshot as \&#34;&#34; + filename + &#34;\&#34;.&#34;)
         else:
-            continued_exception(&#34;[World] Cannot take screenshot until the world is running!&#34;)
+            _continued_exception(&#34;[World] Cannot take screenshot until the World is running!&#34;)
 
     def set_fps(self, fps):
+        &#34;&#34;&#34;Sets the FPS of the World.\n
+**IMPORTANT:** Can only be called before [```World.start()```](#karel_the_robot.World.start) is called.
+##Required Parameters:##
+* **fps (int)** the FPS for the World to run at
+    * ```0 &lt; fps```
+&#34;&#34;&#34;
         global FPS
-        FPS = fps
-        print(&#34;[World] Changed FPS&#34;)
+        if self.__thread.is_alive():
+            _continued_exception(&#34;[World] Cannot change FPS while the World is running!&#34;)
+        else:
+            FPS = fps
+            print(&#34;[World] Changed FPS.&#34;)
 
     def start(self):
-        self.__thread.start()
+        &#34;&#34;&#34;Starts the World.\n
+See [Using Worlds within Code](#using-worlds-within-code) for more detailed information.&#34;&#34;&#34;
+        if self.__thread.is_alive():
+            _continued_exception(&#34;[World] Cannot start the World while the World is already running!&#34;)
+        else:
+            self.__thread.start()
+
 
     def __run(self):
 
@@ -1461,15 +1915,15 @@ before adding the Sprite to Groups.</p></div>
         print(&#34;[World] Screen height is &#34; + str(SCREEN_HEIGHT))
         self.__screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])  # add scaling
 
-        BEEPER_SURF = pygame.transform.scale(readable_pixarray_to_surface(numpy.array(BEEPER)),
+        BEEPER_SURF = pygame.transform.scale(_readable_pixarray_to_surface(numpy.array(BEEPER)),
                                              (TILE_WIDTH, TILE_WIDTH))
 
         print(&#34;[World] Scaling robots...&#34;)
         for r in self.__robots:
-            r.scale_image(TILE_WIDTH)
+            r._scale_image(TILE_WIDTH)
 
         for p in self.__beeper_pos:
-            BEEPERS.add(Beeper(p[0], p[1], p[2]))
+            BEEPERS.add(_Beeper(p[0], p[1], p[2]))
 
         print(&#34;[World] Generating background...&#34;)
         self.__background = pygame.Surface([SCREEN_WIDTH, SCREEN_HEIGHT])
@@ -1487,8 +1941,8 @@ before adding the Sprite to Groups.</p></div>
 
         for w in self.__wall_pos:
             pygame.draw.line(self.__background, RED,
-                             (tile_to_point(w[1]), tile_to_point(w[2])),
-                             (tile_to_point(w[3] if w[0] == 0 else w[1]), tile_to_point(w[3] if w[0] == 1 else w[2])),
+                             (_tile_to_point(w[1]), _tile_to_point(w[2])),
+                             (_tile_to_point(w[3] if w[0] == 0 else w[1]), _tile_to_point(w[3] if w[0] == 1 else w[2])),
                              3)
             for i in range(0, int(abs(w[3] - w[1 if w[0] == 0 else 2]))):
                 # works no matter what order the walls are in
@@ -1513,7 +1967,7 @@ before adding the Sprite to Groups.</p></div>
             any_robots_moved = False
             for r in self.__robots:
                 any_robots_moved = any_robots_moved or r.has_moved_this_frame
-                r.draw(self.__screen)
+                r._draw(self.__screen)
                 r.has_moved_this_frame = False
 
             if any_robots_moved:
@@ -1534,50 +1988,85 @@ before adding the Sprite to Groups.</p></div>
 <span>def <span class="ident">from_file</span></span>(<span>filename)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Creates a World from a file.</p>
+<h2 id="required-parameters">Required Parameters:</h2>
+<ul>
+<li><strong>filename (str)</strong> the file name of the World to be loaded, including the file type
+See <a href="#setting-up-world-files">Setting up World Files</a> for information on setting up World files.</li>
+</ul></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">@classmethod  # constructor for loading a file
-def from_file(cls, filename):
-    file = open(filename)
-    width = 0
-    height = 0
-    fps = 4
-    name = &#34;Karel J Robot&#34;
-    beepers = []
-    walls = []
+<pre><code class="python">    @classmethod  # constructor for loading a file
+    def from_file(cls, filename):
+        &#34;&#34;&#34;Creates a World from a file.
+##Required Parameters:##
+* **filename (str)** the file name of the World to be loaded, including the file type
+See [Setting up World Files](#setting-up-world-files) for information on setting up World files.
+&#34;&#34;&#34;
+        file = open(filename)
+        width = 0
+        height = 0
+        fps = 4
+        name = &#34;Karel J Robot&#34;
+        beepers = []
+        walls = []
 
-    for l in file:
-        if l.startswith(&#34;legacy: &#34;):
-            print(&#34;legacy mode&#34;)
-        elif l.startswith(&#34;name: &#34;) and len(l) &gt; 6:
-            name = str(l[6:])
-        elif l.startswith(&#34;size: &#34;):
-            for i in range(6, len(l)):
-                if l[i] == &#39;(&#39;:
-                    p = extract_vals_inside_parenthesis(l, i)
-                    if len(p) == 2:
-                        width = int(p[0])
-                        height = int(p[1])
-        elif l.startswith(&#34;fps: &#34;) and len(l) &gt; 5:
-            fps = int(l[5:])
-        elif l.startswith(&#34;beepers: &#34;):
-            for i in range(9, len(l)):
-                if l[i] == &#39;(&#39;:
-                    p = extract_vals_inside_parenthesis(l, i)
-                    if len(p) == 3:
-                        beepers.append((int(p[0]), int(p[1]), int(p[2])))
-        elif l.startswith(&#34;walls: &#34;):
-            for i in range(7, len(l)):
-                if l[i] == &#39;(&#39;:
-                    p = extract_vals_inside_parenthesis(l, i)
-                    if len(p) == 4:
-                        walls.append((0 if p[0] == &#39;h&#39; else 1, float(p[1]), float(p[2]), float(p[3])))
-    file.close()
-    return cls(width, height, name=name, fps=fps, beeper_pos=beepers, wall_pos=walls)</code></pre>
+        for l in file:
+            if l.startswith(&#34;legacy: &#34;):
+                print(&#34;legacy mode&#34;)
+            elif l.startswith(&#34;name: &#34;) and len(l) &gt; 6:
+                name = str(l[6:])
+            elif l.startswith(&#34;size: &#34;):
+                for i in range(6, len(l)):
+                    if l[i] == &#39;(&#39;:
+                        p = _extract_vals_inside_parenthesis(l, i)
+                        if len(p) == 2:
+                            width = int(p[0])
+                            height = int(p[1])
+            elif l.startswith(&#34;fps: &#34;) and len(l) &gt; 5:
+                fps = int(l[5:])
+            elif l.startswith(&#34;beepers: &#34;):
+                for i in range(9, len(l)):
+                    if l[i] == &#39;(&#39;:
+                        p = _extract_vals_inside_parenthesis(l, i)
+                        if len(p) == 3:
+                            beepers.append((int(p[0]), int(p[1]), int(p[2])))
+            elif l.startswith(&#34;walls: &#34;):
+                for i in range(7, len(l)):
+                    if l[i] == &#39;(&#39;:
+                        p = _extract_vals_inside_parenthesis(l, i)
+                        if len(p) == 4:
+                            walls.append((0 if p[0] == &#39;h&#39; else 1, float(p[1]), float(p[2]), float(p[3])))
+        file.close()
+        return cls(width, height, name=name, fps=fps, beeper_pos=beepers, wall_pos=walls)</code></pre>
 </details>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="karel_the_robot.World.IDEAL_HEIGHT"><code class="name">var <span class="ident">IDEAL_HEIGHT</span></code></dt>
+<dd>
+<div class="desc"><h4 id="change-this-value-depending-on-the-device-this-script-is-running-on"><strong>CHANGE THIS VALUE DEPENDING ON THE DEVICE THIS SCRIPT IS RUNNING ON</strong></h4>
+<blockquote>
+<p>This is the maximum number of pixels the World window can take up vertically.</p>
+<p>Check your monitor resolution for the best results.</p>
+<ul>
+<li>Ideal value for Repl.it: 600</li>
+</ul>
+</blockquote></div>
+</dd>
+<dt id="karel_the_robot.World.IDEAL_WIDTH"><code class="name">var <span class="ident">IDEAL_WIDTH</span></code></dt>
+<dd>
+<div class="desc"><h4 id="change-this-value-depending-on-the-device-this-script-is-running-on"><strong>CHANGE THIS VALUE DEPENDING ON THE DEVICE THIS SCRIPT IS RUNNING ON</strong></h4>
+<blockquote>
+<p>This is the maximum number of pixels the World window can take up horizontally.</p>
+<p>Check your monitor resolution for the best results.</p>
+<ul>
+<li>Ideal value for Repl.it: 800</li>
+</ul>
+</blockquote></div>
 </dd>
 </dl>
 <h3>Methods</h3>
@@ -1586,65 +2075,112 @@ def from_file(cls, filename):
 <span>def <span class="ident">add_robots</span></span>(<span>self, *robots)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Adds Robots to the World.</p>
+<h2 id="required-parameters">Required Parameters:</h2>
+<ul>
+<li><strong>robots (Robot&hellip;)</strong> any Robots to be added to the World
+See <a href="#using-worlds-within-code">Using Worlds within Code</a> for more detailed information.</li>
+</ul></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def add_robots(self, *robots):
-    if self.__thread.is_alive():
-        continued_exception(&#34;[World] Cannot add robots while the world is running!&#34;)
-    else:
-        for r in robots:
-            self.__robots.append(r)
-            print(&#34;[World] Added &#34; + r.get_sleeve_color() + &#34; Robot&#34;)</code></pre>
+<pre><code class="python">    def add_robots(self, *robots):
+        &#34;&#34;&#34;Adds Robots to the World.
+##Required Parameters:##
+* **robots (Robot...)** any Robots to be added to the World
+See [Using Worlds within Code](#using-worlds-within-code) for more detailed information.
+&#34;&#34;&#34;
+        if self.__thread.is_alive():
+            _continued_exception(&#34;[World] Cannot add robots while the world is running!&#34;)
+        else:
+            for r in robots:
+                self.__robots.append(r)
+                print(&#34;[World] Added &#34; + r.get_sleeve_color() + &#34; Robot&#34;)</code></pre>
 </details>
 </dd>
 <dt id="karel_the_robot.World.save_screenshot"><code class="name flex">
 <span>def <span class="ident">save_screenshot</span></span>(<span>self, filename='screenshot.jpg')</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Saves a screenshot of the World.</p>
+<h2 id="optional-parameters">Optional Parameters:</h2>
+<ul>
+<li><strong>filename (str)</strong> the desired filename of the screenshot<ul>
+<li>Default: <code>"screenshot.jpg"</code></li>
+<li><code>.jpg</code> will automatically be added to the end of the filename if it is not there already</li>
+</ul>
+</li>
+</ul></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def save_screenshot(self, filename=&#34;screenshot.jpg&#34;):
-    if not filename.endswith(&#34;.jpg&#34;):
-        filename += &#34;.jpg&#34;
-    if self.__thread.is_alive():
-        pygame.image.save(self.__screen, filename)
-        print(&#34;[World] Saved screenshot as \&#34;&#34; + filename + &#34;\&#34;.&#34;)
-    else:
-        continued_exception(&#34;[World] Cannot take screenshot until the world is running!&#34;)</code></pre>
+<pre><code class="python">    def save_screenshot(self, filename=&#34;screenshot.jpg&#34;):
+        &#34;&#34;&#34;Saves a screenshot of the World.
+##Optional Parameters:##
+* **filename (str)** the desired filename of the screenshot
+    * Default: ```&#34;screenshot.jpg&#34;```
+    * ```.jpg``` will automatically be added to the end of the filename if it is not there already
+&#34;&#34;&#34;
+        if not filename.endswith(&#34;.jpg&#34;):
+            filename += &#34;.jpg&#34;
+        if self.__thread.is_alive():
+            pygame.image.save(self.__screen, filename)
+            print(&#34;[World] Saved screenshot as \&#34;&#34; + filename + &#34;\&#34;.&#34;)
+        else:
+            _continued_exception(&#34;[World] Cannot take screenshot until the World is running!&#34;)</code></pre>
 </details>
 </dd>
 <dt id="karel_the_robot.World.set_fps"><code class="name flex">
 <span>def <span class="ident">set_fps</span></span>(<span>self, fps)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sets the FPS of the World.</p>
+<p><strong>IMPORTANT:</strong> Can only be called before <a href="#karel_the_robot.World.start"><code>World.start()</code></a> is called.</p>
+<h2 id="required-parameters">Required Parameters:</h2>
+<ul>
+<li><strong>fps (int)</strong> the FPS for the World to run at<ul>
+<li><code>0 &lt; fps</code></li>
+</ul>
+</li>
+</ul></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_fps(self, fps):
-    global FPS
-    FPS = fps
-    print(&#34;[World] Changed FPS&#34;)</code></pre>
+<pre><code class="python">    def set_fps(self, fps):
+        &#34;&#34;&#34;Sets the FPS of the World.\n
+**IMPORTANT:** Can only be called before [```World.start()```](#karel_the_robot.World.start) is called.
+##Required Parameters:##
+* **fps (int)** the FPS for the World to run at
+    * ```0 &lt; fps```
+&#34;&#34;&#34;
+        global FPS
+        if self.__thread.is_alive():
+            _continued_exception(&#34;[World] Cannot change FPS while the World is running!&#34;)
+        else:
+            FPS = fps
+            print(&#34;[World] Changed FPS.&#34;)</code></pre>
 </details>
 </dd>
 <dt id="karel_the_robot.World.start"><code class="name flex">
 <span>def <span class="ident">start</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Starts the World.</p>
+<p>See <a href="#using-worlds-within-code">Using Worlds within Code</a> for more detailed information.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def start(self):
-    self.__thread.start()</code></pre>
+<pre><code class="python">    def start(self):
+        &#34;&#34;&#34;Starts the World.\n
+See [Using Worlds within Code](#using-worlds-within-code) for more detailed information.&#34;&#34;&#34;
+        if self.__thread.is_alive():
+            _continued_exception(&#34;[World] Cannot start the World while the World is already running!&#34;)
+        else:
+            self.__thread.start()</code></pre>
 </details>
 </dd>
 </dl>
@@ -1655,50 +2191,33 @@ def from_file(cls, filename):
 <nav id="sidebar">
 <h1>Index</h1>
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#importing">Importing</a></li>
+<li><a href="#creating-custom-methods">Creating Custom Methods</a></li>
+<li><a href="#using-worlds-within-code">Using Worlds within Code</a></li>
+<li><a href="#setting-up-world-files">Setting up World Files</a></li>
+</ul>
 </div>
 <ul id="index">
-<li><h3><a href="#header-variables">Global variables</a></h3>
-<ul class="">
-<li><code><a title="karel_the_robot.SLEEVE_COLORS" href="#karel_the_robot.SLEEVE_COLORS">SLEEVE_COLORS</a></code></li>
-</ul>
-</li>
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="karel_the_robot.continued_exception" href="#karel_the_robot.continued_exception">continued_exception</a></code></li>
-<li><code><a title="karel_the_robot.extract_vals_inside_parenthesis" href="#karel_the_robot.extract_vals_inside_parenthesis">extract_vals_inside_parenthesis</a></code></li>
-<li><code><a title="karel_the_robot.point_to_tile" href="#karel_the_robot.point_to_tile">point_to_tile</a></code></li>
-<li><code><a title="karel_the_robot.readable_pixarray_to_surface" href="#karel_the_robot.readable_pixarray_to_surface">readable_pixarray_to_surface</a></code></li>
-<li><code><a title="karel_the_robot.replace_2d" href="#karel_the_robot.replace_2d">replace_2d</a></code></li>
-<li><code><a title="karel_the_robot.tile_to_point" href="#karel_the_robot.tile_to_point">tile_to_point</a></code></li>
-<li><code><a title="karel_the_robot.wall_at" href="#karel_the_robot.wall_at">wall_at</a></code></li>
-</ul>
-</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="karel_the_robot.Beeper" href="#karel_the_robot.Beeper">Beeper</a></code></h4>
-<ul class="">
-<li><code><a title="karel_the_robot.Beeper.dec" href="#karel_the_robot.Beeper.dec">dec</a></code></li>
-<li><code><a title="karel_the_robot.Beeper.draw" href="#karel_the_robot.Beeper.draw">draw</a></code></li>
-<li><code><a title="karel_the_robot.Beeper.inc" href="#karel_the_robot.Beeper.inc">inc</a></code></li>
-<li><code><a title="karel_the_robot.Beeper.update_image" href="#karel_the_robot.Beeper.update_image">update_image</a></code></li>
-</ul>
-</li>
-<li>
 <h4><code><a title="karel_the_robot.Robot" href="#karel_the_robot.Robot">Robot</a></code></h4>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="karel_the_robot.Robot.add_method" href="#karel_the_robot.Robot.add_method">add_method</a></code></li>
-<li><code><a title="karel_the_robot.Robot.draw" href="#karel_the_robot.Robot.draw">draw</a></code></li>
+<li><code><a title="karel_the_robot.Robot.facing_east" href="#karel_the_robot.Robot.facing_east">facing_east</a></code></li>
+<li><code><a title="karel_the_robot.Robot.facing_north" href="#karel_the_robot.Robot.facing_north">facing_north</a></code></li>
+<li><code><a title="karel_the_robot.Robot.facing_south" href="#karel_the_robot.Robot.facing_south">facing_south</a></code></li>
+<li><code><a title="karel_the_robot.Robot.facing_west" href="#karel_the_robot.Robot.facing_west">facing_west</a></code></li>
 <li><code><a title="karel_the_robot.Robot.front_is_clear" href="#karel_the_robot.Robot.front_is_clear">front_is_clear</a></code></li>
 <li><code><a title="karel_the_robot.Robot.get_sleeve_color" href="#karel_the_robot.Robot.get_sleeve_color">get_sleeve_color</a></code></li>
 <li><code><a title="karel_the_robot.Robot.has_any_beepers" href="#karel_the_robot.Robot.has_any_beepers">has_any_beepers</a></code></li>
-<li><code><a title="karel_the_robot.Robot.id" href="#karel_the_robot.Robot.id">id</a></code></li>
 <li><code><a title="karel_the_robot.Robot.move" href="#karel_the_robot.Robot.move">move</a></code></li>
 <li><code><a title="karel_the_robot.Robot.pick_beeper" href="#karel_the_robot.Robot.pick_beeper">pick_beeper</a></code></li>
 <li><code><a title="karel_the_robot.Robot.put_beeper" href="#karel_the_robot.Robot.put_beeper">put_beeper</a></code></li>
-<li><code><a title="karel_the_robot.Robot.scale_image" href="#karel_the_robot.Robot.scale_image">scale_image</a></code></li>
 <li><code><a title="karel_the_robot.Robot.set_zoom_fps" href="#karel_the_robot.Robot.set_zoom_fps">set_zoom_fps</a></code></li>
+<li><code><a title="karel_the_robot.Robot.standing_on_any_beepers" href="#karel_the_robot.Robot.standing_on_any_beepers">standing_on_any_beepers</a></code></li>
+<li><code><a title="karel_the_robot.Robot.standing_on_any_robots" href="#karel_the_robot.Robot.standing_on_any_robots">standing_on_any_robots</a></code></li>
 <li><code><a title="karel_the_robot.Robot.turn_left" href="#karel_the_robot.Robot.turn_left">turn_left</a></code></li>
 <li><code><a title="karel_the_robot.Robot.turn_off" href="#karel_the_robot.Robot.turn_off">turn_off</a></code></li>
 <li><code><a title="karel_the_robot.Robot.wait" href="#karel_the_robot.Robot.wait">wait</a></code></li>
@@ -1707,7 +2226,9 @@ def from_file(cls, filename):
 </li>
 <li>
 <h4><code><a title="karel_the_robot.World" href="#karel_the_robot.World">World</a></code></h4>
-<ul class="">
+<ul class="two-column">
+<li><code><a title="karel_the_robot.World.IDEAL_HEIGHT" href="#karel_the_robot.World.IDEAL_HEIGHT">IDEAL_HEIGHT</a></code></li>
+<li><code><a title="karel_the_robot.World.IDEAL_WIDTH" href="#karel_the_robot.World.IDEAL_WIDTH">IDEAL_WIDTH</a></code></li>
 <li><code><a title="karel_the_robot.World.add_robots" href="#karel_the_robot.World.add_robots">add_robots</a></code></li>
 <li><code><a title="karel_the_robot.World.from_file" href="#karel_the_robot.World.from_file">from_file</a></code></li>
 <li><code><a title="karel_the_robot.World.save_screenshot" href="#karel_the_robot.World.save_screenshot">save_screenshot</a></code></li>
