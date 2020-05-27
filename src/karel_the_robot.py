@@ -482,8 +482,6 @@ class Robot(pygame.sprite.Sprite):
             else:
                 _continued_exception("[" + self.__color[0] + " Robot] I ran into a wall! ")
                 self.turn_off()
-
-            print("tried to move")
             self.has_moved_this_frame = True
 
     def pick_beeper(self):
@@ -517,8 +515,6 @@ class Robot(pygame.sprite.Sprite):
                 # raise Exception("[" + self.__color[0] + " Robot] I don't have any beepers! ")
                 _continued_exception("[" + self.__color[0] + " Robot] I don't have any beepers! ")
                 self.turn_off()
-
-            print("tried to put beeper" + str(self.__beepers))
             self.has_moved_this_frame = True
 
     def has_any_beepers(self):
@@ -527,7 +523,7 @@ class Robot(pygame.sprite.Sprite):
         """
         return self.__beepers > 0
 
-    def front_is_clear(self): #TODO: maybe invert
+    def front_is_clear(self):  # TODO: maybe invert
         """Returns True if there are no walls directly in front of the Robot, and False if there are.\n
         **return type:** ```bool```
         """
@@ -588,24 +584,22 @@ class Robot(pygame.sprite.Sprite):
             self.is_alive = False
             self.__array = _replace_2d(self.__array, YELLOW, L_GREY)
             self._scale_image(TILE_WIDTH)
-            print("am dead")
 
     def wait(self):
         """Makes the Robot freeze for a single frame."""
         global FPS
         if self.is_alive:  # prevents commands from being run before the loop checks for dead robots, putting it in an infinite loop
             while self.has_moved_this_frame:
-                # print("waiting for frame")
                 time.sleep(1.0 / FPS)
 
     def _draw(self, screen):
         screen.blit(self.__image, (self.__rect.x, self.__rect.y))
 
-    # https://medium.com/@mgarod/dynamically-add-a-method-to-a-class-in-python-c49204b85bd6
     def add_method(self):
         """[[Source]](https://medium.com/@mgarod/dynamically-add-a-method-to-a-class-in-python-c49204b85bd6)\n
         **See [Creating Custom Methods](#creating-custom-methods) for more information.**
         """
+
         def decorator(func):
             @wraps(func)
             def wrapper(self, *args, **kwargs):
@@ -642,10 +636,8 @@ Makes the Robot start zooming if True, and makes the Robot stop zooming if False
             if on:
                 self.__prev_fps = FPS
                 FPS = self.__zoom_fps
-                print("ZOOM")
             else:
                 FPS = self.__prev_fps
-                print("no longer zooming")
 
 
 class _Beeper(pygame.sprite.Sprite):
@@ -832,7 +824,6 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
         else:
             self.__thread.start()
 
-
     def __run(self):
 
         print("\n" + "[World] Initializing..." + "\n")
@@ -888,7 +879,6 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
         self.__idle_frames = 0
 
         print("[World] Done!" + "\n\n\n\n")
-        print(WALLS)
         # quits if it idles for more than one second
         while sum(r.is_alive for r in self.__robots) > 0 and self.__idle_frames < FPS:
             pygame.event.get()  # required or else the window thinks it's not responding
@@ -912,3 +902,5 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
         pygame.image.save(self.__screen, "final_world_status.jpg")
         print("[World] Quitting...")
         pygame.quit()
+
+# TODO: add dialogue for all robot moves
