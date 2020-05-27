@@ -491,7 +491,7 @@ class Robot(pygame.sprite.Sprite):
         global BEEPERS
         if self.is_alive:
             self.wait()
-            beepers_at_pos = [b for b in BEEPERS if b.__tile_x == self.__tile_x and b.__tile_y == self.__tile_y]
+            beepers_at_pos = [b for b in BEEPERS if b.tile_x == self.__tile_x and b.tile_y == self.__tile_y]
             if len(beepers_at_pos) > 0:
                 beepers_at_pos[0]._dec()
                 self.__beepers += 1
@@ -566,7 +566,7 @@ class Robot(pygame.sprite.Sprite):
         """Returns True if the Robot is standing on at least 1 Beeper, and False if not.\n
         **return type:** ```bool```
         """
-        return len([b for b in BEEPERS if b.__tile_x == self.__tile_x and b.__tile_y == self.__tile_y]) > 0
+        return len([b for b in BEEPERS if b.tile_x == self.__tile_x and b.tile_y == self.__tile_y]) > 0
 
     def standing_on_any_robots(self):
         """##**NOT IMPLEMENTED YET**##
@@ -904,3 +904,5 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
         pygame.quit()
 
 # TODO: add dialogue for all robot moves
+# TODO: prevent robot from going out of bounds
+# TODO: add all error messages
