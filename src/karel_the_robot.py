@@ -338,6 +338,9 @@ BEEPER = [
 
 BEEPER_SURF = 0
 
+HORIZ_TILES = 0
+VERT_TILES = 0
+
 
 def _continued_exception(text):
     try:
@@ -376,7 +379,9 @@ def _point_to_tile(point):
 
 
 def _wall_at(tile_x, tile_y):
-    global WALLS
+    global WALLS, HORIZ_TILES, VERT_TILES
+    if tile_x == -0.5 or tile_y == -0.5 or tile_x == HORIZ_TILES + 0.5 or tile_y == VERT_TILES + 0.5:
+        return True
     for w in WALLS:
         if w[0] == tile_x and w[1] == tile_y:
             return True
@@ -699,7 +704,7 @@ class World(object):
 
     # maybe add window size attributes
     def __init__(self, width, height, name="Karel J Robot", fps=4, beeper_pos=[], wall_pos=[]):
-        global FPS, BEEPERS
+        global FPS, BEEPERS, HORIZ_TILES, VERT_TILES
         self.IDEAL_HEIGHT = 700
         """####**CHANGE THIS VALUE DEPENDING ON THE DEVICE THIS SCRIPT IS RUNNING ON**####
         >This is the maximum number of pixels the World window can take up vertically.\n
@@ -712,8 +717,8 @@ class World(object):
         >* Ideal value for Repl.it: 800"""
         FPS = fps
 
-        self.__width = width
-        self.__height = height
+        HORIZ_TILES = width
+        VERT_TILES = height
         self.__beeper_pos = beeper_pos
         self.__wall_pos = wall_pos
 
@@ -827,13 +832,13 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
     def __run(self):
 
         print("\n" + "[World] Initializing..." + "\n")
-        global SCREEN_WIDTH, SCREEN_HEIGHT, TILE_WIDTH, FPS, BEEPERS, BEEPER_SURF, WALLS
+        global SCREEN_WIDTH, SCREEN_HEIGHT, TILE_WIDTH, FPS, BEEPERS, BEEPER_SURF, WALLS, HORIZ_TILES, VERT_TILES
         pygame.init()
-        TILE_WIDTH = int(min(self.IDEAL_WIDTH / (self.__width + 1), self.IDEAL_HEIGHT / (self.__height + 1)))
+        TILE_WIDTH = int(min(self.IDEAL_WIDTH / (HORIZ_TILES + 1), self.IDEAL_HEIGHT / (VERT_TILES + 1)))
         if TILE_WIDTH % 2 == 1:
             TILE_WIDTH -= 1
-        SCREEN_WIDTH = TILE_WIDTH * (self.__width + 1)
-        SCREEN_HEIGHT = TILE_WIDTH * (self.__height + 1)
+        SCREEN_WIDTH = TILE_WIDTH * (HORIZ_TILES + 1)
+        SCREEN_HEIGHT = TILE_WIDTH * (VERT_TILES + 1)
         print("[World] Screen height is " + str(SCREEN_HEIGHT))
         self.__screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])  # add scaling
 
@@ -850,15 +855,15 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
         print("[World] Generating background...")
         self.__background = pygame.Surface([SCREEN_WIDTH, SCREEN_HEIGHT])
         self.__background.fill(WHITE)
-        for x in range(0, self.__width + 1):
+        for x in range(0, HORIZ_TILES + 1):
             pygame.draw.line(self.__background, BLACK, ((x + 0.5) * TILE_WIDTH, 0.5 * TILE_WIDTH),
-                             ((x + 0.5) * TILE_WIDTH, (self.__height + 0.5) * TILE_WIDTH))
-            self.__background.blit(pygame.font.Font('freesansbold.ttf', 10).render(str(x), True, BLACK),
+                             ((x + 0.5) * TILE_WIDTH, (VERT_TILES + 0.5) * TILE_WIDTH))
+            self.__background.blit(pygame.font.Font("freesansbold.ttf", 10).render(str(x), True, BLACK),
                                    ((x + 0.5) * TILE_WIDTH, 0.25 * TILE_WIDTH))
-        for y in range(0, self.__height + 1):
+        for y in range(0, VERT_TILES + 1):
             pygame.draw.line(self.__background, BLACK, (0.5 * TILE_WIDTH, (y + 0.5) * TILE_WIDTH),
-                             ((self.__width + 0.5) * TILE_WIDTH, (y + 0.5) * TILE_WIDTH))
-            self.__background.blit(pygame.font.Font('freesansbold.ttf', 10).render(str(y), True, BLACK),
+                             ((HORIZ_TILES + 0.5) * TILE_WIDTH, (y + 0.5) * TILE_WIDTH))
+            self.__background.blit(pygame.font.Font("freesansbold.ttf", 10).render(str(y), True, BLACK),
                                    (0.25 * TILE_WIDTH, (y + 0.5) * TILE_WIDTH))
 
         for w in self.__wall_pos:
@@ -904,5 +909,4 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
         pygame.quit()
 
 # TODO: add dialogue for all robot moves
-# TODO: prevent robot from going out of bounds
 # TODO: add all error messages
