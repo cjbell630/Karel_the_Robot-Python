@@ -17,6 +17,7 @@ def move_x(Robot, x):
 world = World.from_file("example_world.txt")
 karel = Robot(4, 4, "East", 0)
 world.add_robots(karel)
+
 world.start()
 
 karel.turn(2)
