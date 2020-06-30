@@ -191,6 +191,7 @@
 ##Future Plans##
 * Add all possible error messages (most are present, but not all)
 * Figure out a clean way to show Robot movements in the console (such as "[Green Robot] Moved once")
+* Add a legacy mode for Java Karel world files
 * Get the zoom feature working
 * Get the global movement variable working
 * Add more objects for Robots to interact with (ex rotating gears)
