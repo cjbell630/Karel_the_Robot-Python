@@ -241,6 +241,14 @@ walls: (h 1.5 2.5 8.5) (v 4.5 3.5 7.5)
 <p><img alt="Example World Screenshot" src="https://cjbell630.github.io/example-world.jpg"></p>
 </blockquote>
 </blockquote>
+<h2 id="future-plans">Future Plans</h2>
+<ul>
+<li>Add all possible error messages (most are present, but not all)</li>
+<li>Figure out a clean way to show Robot movements in the console (such as "[Green Robot] Moved once")</li>
+<li>Get the zoom feature working</li>
+<li>Get the global movement variable working</li>
+<li>Add more objects for Robots to interact with (ex rotating gears)</li>
+</ul>
 <hr>
 <details class="source">
 <summary>
@@ -436,6 +444,13 @@ walls: (h 1.5 2.5 8.5) (v 4.5 3.5 7.5)
 
 &gt;&gt;![Example World Screenshot](https://cjbell630.github.io/example-world.jpg)
 
+##Future Plans##
+* Add all possible error messages (most are present, but not all)
+* Figure out a clean way to show Robot movements in the console (such as &#34;[Green Robot] Moved once&#34;)
+* Get the zoom feature working
+* Get the global movement variable working
+* Add more objects for Robots to interact with (ex rotating gears)
+
 
 ---
 
@@ -586,6 +601,9 @@ BEEPER = [
 
 BEEPER_SURF = 0
 
+HORIZ_TILES = 0
+VERT_TILES = 0
+
 
 def _continued_exception(text):
     try:
@@ -624,7 +642,9 @@ def _point_to_tile(point):
 
 
 def _wall_at(tile_x, tile_y):
-    global WALLS
+    global WALLS, HORIZ_TILES, VERT_TILES
+    if tile_x == -0.5 or tile_y == -0.5 or tile_x == HORIZ_TILES + 0.5 or tile_y == VERT_TILES + 0.5:
+        return True
     for w in WALLS:
         if w[0] == tile_x and w[1] == tile_y:
             return True
@@ -730,8 +750,6 @@ class Robot(pygame.sprite.Sprite):
             else:
                 _continued_exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I ran into a wall! &#34;)
                 self.turn_off()
-
-            print(&#34;tried to move&#34;)
             self.has_moved_this_frame = True
 
     def pick_beeper(self):
@@ -741,7 +759,7 @@ class Robot(pygame.sprite.Sprite):
         global BEEPERS
         if self.is_alive:
             self.wait()
-            beepers_at_pos = [b for b in BEEPERS if b.__tile_x == self.__tile_x and b.__tile_y == self.__tile_y]
+            beepers_at_pos = [b for b in BEEPERS if b.tile_x == self.__tile_x and b.tile_y == self.__tile_y]
             if len(beepers_at_pos) &gt; 0:
                 beepers_at_pos[0]._dec()
                 self.__beepers += 1
@@ -765,8 +783,6 @@ class Robot(pygame.sprite.Sprite):
                 # raise Exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I don&#39;t have any beepers! &#34;)
                 _continued_exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I don&#39;t have any beepers! &#34;)
                 self.turn_off()
-
-            print(&#34;tried to put beeper&#34; + str(self.__beepers))
             self.has_moved_this_frame = True
 
     def has_any_beepers(self):
@@ -775,7 +791,7 @@ class Robot(pygame.sprite.Sprite):
         &#34;&#34;&#34;
         return self.__beepers &gt; 0
 
-    def front_is_clear(self): #TODO: maybe invert
+    def front_is_clear(self):  # TODO: maybe invert
         &#34;&#34;&#34;Returns True if there are no walls directly in front of the Robot, and False if there are.\n
         **return type:** ```bool```
         &#34;&#34;&#34;
@@ -818,7 +834,7 @@ class Robot(pygame.sprite.Sprite):
         &#34;&#34;&#34;Returns True if the Robot is standing on at least 1 Beeper, and False if not.\n
         **return type:** ```bool```
         &#34;&#34;&#34;
-        return len([b for b in BEEPERS if b.__tile_x == self.__tile_x and b.__tile_y == self.__tile_y]) &gt; 0
+        return len([b for b in BEEPERS if b.tile_x == self.__tile_x and b.tile_y == self.__tile_y]) &gt; 0
 
     def standing_on_any_robots(self):
         &#34;&#34;&#34;##**NOT IMPLEMENTED YET**##
@@ -836,24 +852,22 @@ class Robot(pygame.sprite.Sprite):
             self.is_alive = False
             self.__array = _replace_2d(self.__array, YELLOW, L_GREY)
             self._scale_image(TILE_WIDTH)
-            print(&#34;am dead&#34;)
 
     def wait(self):
         &#34;&#34;&#34;Makes the Robot freeze for a single frame.&#34;&#34;&#34;
         global FPS
         if self.is_alive:  # prevents commands from being run before the loop checks for dead robots, putting it in an infinite loop
             while self.has_moved_this_frame:
-                # print(&#34;waiting for frame&#34;)
                 time.sleep(1.0 / FPS)
 
     def _draw(self, screen):
         screen.blit(self.__image, (self.__rect.x, self.__rect.y))
 
-    # https://medium.com/@mgarod/dynamically-add-a-method-to-a-class-in-python-c49204b85bd6
     def add_method(self):
         &#34;&#34;&#34;[[Source]](https://medium.com/@mgarod/dynamically-add-a-method-to-a-class-in-python-c49204b85bd6)\n
         **See [Creating Custom Methods](#creating-custom-methods) for more information.**
         &#34;&#34;&#34;
+
         def decorator(func):
             @wraps(func)
             def wrapper(self, *args, **kwargs):
@@ -890,10 +904,8 @@ Makes the Robot start zooming if True, and makes the Robot stop zooming if False
             if on:
                 self.__prev_fps = FPS
                 FPS = self.__zoom_fps
-                print(&#34;ZOOM&#34;)
             else:
                 FPS = self.__prev_fps
-                print(&#34;no longer zooming&#34;)
 
 
 class _Beeper(pygame.sprite.Sprite):
@@ -955,7 +967,7 @@ class World(object):
 
     # maybe add window size attributes
     def __init__(self, width, height, name=&#34;Karel J Robot&#34;, fps=4, beeper_pos=[], wall_pos=[]):
-        global FPS, BEEPERS
+        global FPS, BEEPERS, HORIZ_TILES, VERT_TILES
         self.IDEAL_HEIGHT = 700
         &#34;&#34;&#34;####**CHANGE THIS VALUE DEPENDING ON THE DEVICE THIS SCRIPT IS RUNNING ON**####
         &gt;This is the maximum number of pixels the World window can take up vertically.\n
@@ -968,8 +980,8 @@ class World(object):
         &gt;* Ideal value for Repl.it: 800&#34;&#34;&#34;
         FPS = fps
 
-        self.__width = width
-        self.__height = height
+        HORIZ_TILES = width
+        VERT_TILES = height
         self.__beeper_pos = beeper_pos
         self.__wall_pos = wall_pos
 
@@ -1080,17 +1092,16 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
         else:
             self.__thread.start()
 
-
     def __run(self):
 
         print(&#34;\n&#34; + &#34;[World] Initializing...&#34; + &#34;\n&#34;)
-        global SCREEN_WIDTH, SCREEN_HEIGHT, TILE_WIDTH, FPS, BEEPERS, BEEPER_SURF, WALLS
+        global SCREEN_WIDTH, SCREEN_HEIGHT, TILE_WIDTH, FPS, BEEPERS, BEEPER_SURF, WALLS, HORIZ_TILES, VERT_TILES
         pygame.init()
-        TILE_WIDTH = int(min(self.IDEAL_WIDTH / (self.__width + 1), self.IDEAL_HEIGHT / (self.__height + 1)))
+        TILE_WIDTH = int(min(self.IDEAL_WIDTH / (HORIZ_TILES + 1), self.IDEAL_HEIGHT / (VERT_TILES + 1)))
         if TILE_WIDTH % 2 == 1:
             TILE_WIDTH -= 1
-        SCREEN_WIDTH = TILE_WIDTH * (self.__width + 1)
-        SCREEN_HEIGHT = TILE_WIDTH * (self.__height + 1)
+        SCREEN_WIDTH = TILE_WIDTH * (HORIZ_TILES + 1)
+        SCREEN_HEIGHT = TILE_WIDTH * (VERT_TILES + 1)
         print(&#34;[World] Screen height is &#34; + str(SCREEN_HEIGHT))
         self.__screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])  # add scaling
 
@@ -1107,15 +1118,15 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
         print(&#34;[World] Generating background...&#34;)
         self.__background = pygame.Surface([SCREEN_WIDTH, SCREEN_HEIGHT])
         self.__background.fill(WHITE)
-        for x in range(0, self.__width + 1):
+        for x in range(0, HORIZ_TILES + 1):
             pygame.draw.line(self.__background, BLACK, ((x + 0.5) * TILE_WIDTH, 0.5 * TILE_WIDTH),
-                             ((x + 0.5) * TILE_WIDTH, (self.__height + 0.5) * TILE_WIDTH))
-            self.__background.blit(pygame.font.Font(&#39;freesansbold.ttf&#39;, 10).render(str(x), True, BLACK),
+                             ((x + 0.5) * TILE_WIDTH, (VERT_TILES + 0.5) * TILE_WIDTH))
+            self.__background.blit(pygame.font.Font(&#34;freesansbold.ttf&#34;, 10).render(str(x), True, BLACK),
                                    ((x + 0.5) * TILE_WIDTH, 0.25 * TILE_WIDTH))
-        for y in range(0, self.__height + 1):
+        for y in range(0, VERT_TILES + 1):
             pygame.draw.line(self.__background, BLACK, (0.5 * TILE_WIDTH, (y + 0.5) * TILE_WIDTH),
-                             ((self.__width + 0.5) * TILE_WIDTH, (y + 0.5) * TILE_WIDTH))
-            self.__background.blit(pygame.font.Font(&#39;freesansbold.ttf&#39;, 10).render(str(y), True, BLACK),
+                             ((HORIZ_TILES + 0.5) * TILE_WIDTH, (y + 0.5) * TILE_WIDTH))
+            self.__background.blit(pygame.font.Font(&#34;freesansbold.ttf&#34;, 10).render(str(y), True, BLACK),
                                    (0.25 * TILE_WIDTH, (y + 0.5) * TILE_WIDTH))
 
         for w in self.__wall_pos:
@@ -1136,7 +1147,6 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
         self.__idle_frames = 0
 
         print(&#34;[World] Done!&#34; + &#34;\n\n\n\n&#34;)
-        print(WALLS)
         # quits if it idles for more than one second
         while sum(r.is_alive for r in self.__robots) &gt; 0 and self.__idle_frames &lt; FPS:
             pygame.event.get()  # required or else the window thinks it&#39;s not responding
@@ -1159,7 +1169,10 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
         print(&#34;[World] Saving screenshot...&#34;)
         pygame.image.save(self.__screen, &#34;final_world_status.jpg&#34;)
         print(&#34;[World] Quitting...&#34;)
-        pygame.quit()</code></pre>
+        pygame.quit()
+
+# TODO: add dialogue for all robot moves
+# TODO: add more error messages</code></pre>
 </details>
 </section>
 <section>
@@ -1291,8 +1304,6 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
             else:
                 _continued_exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I ran into a wall! &#34;)
                 self.turn_off()
-
-            print(&#34;tried to move&#34;)
             self.has_moved_this_frame = True
 
     def pick_beeper(self):
@@ -1302,7 +1313,7 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
         global BEEPERS
         if self.is_alive:
             self.wait()
-            beepers_at_pos = [b for b in BEEPERS if b.__tile_x == self.__tile_x and b.__tile_y == self.__tile_y]
+            beepers_at_pos = [b for b in BEEPERS if b.tile_x == self.__tile_x and b.tile_y == self.__tile_y]
             if len(beepers_at_pos) &gt; 0:
                 beepers_at_pos[0]._dec()
                 self.__beepers += 1
@@ -1326,8 +1337,6 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
                 # raise Exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I don&#39;t have any beepers! &#34;)
                 _continued_exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I don&#39;t have any beepers! &#34;)
                 self.turn_off()
-
-            print(&#34;tried to put beeper&#34; + str(self.__beepers))
             self.has_moved_this_frame = True
 
     def has_any_beepers(self):
@@ -1336,7 +1345,7 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
         &#34;&#34;&#34;
         return self.__beepers &gt; 0
 
-    def front_is_clear(self): #TODO: maybe invert
+    def front_is_clear(self):  # TODO: maybe invert
         &#34;&#34;&#34;Returns True if there are no walls directly in front of the Robot, and False if there are.\n
         **return type:** ```bool```
         &#34;&#34;&#34;
@@ -1379,7 +1388,7 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
         &#34;&#34;&#34;Returns True if the Robot is standing on at least 1 Beeper, and False if not.\n
         **return type:** ```bool```
         &#34;&#34;&#34;
-        return len([b for b in BEEPERS if b.__tile_x == self.__tile_x and b.__tile_y == self.__tile_y]) &gt; 0
+        return len([b for b in BEEPERS if b.tile_x == self.__tile_x and b.tile_y == self.__tile_y]) &gt; 0
 
     def standing_on_any_robots(self):
         &#34;&#34;&#34;##**NOT IMPLEMENTED YET**##
@@ -1397,24 +1406,22 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
             self.is_alive = False
             self.__array = _replace_2d(self.__array, YELLOW, L_GREY)
             self._scale_image(TILE_WIDTH)
-            print(&#34;am dead&#34;)
 
     def wait(self):
         &#34;&#34;&#34;Makes the Robot freeze for a single frame.&#34;&#34;&#34;
         global FPS
         if self.is_alive:  # prevents commands from being run before the loop checks for dead robots, putting it in an infinite loop
             while self.has_moved_this_frame:
-                # print(&#34;waiting for frame&#34;)
                 time.sleep(1.0 / FPS)
 
     def _draw(self, screen):
         screen.blit(self.__image, (self.__rect.x, self.__rect.y))
 
-    # https://medium.com/@mgarod/dynamically-add-a-method-to-a-class-in-python-c49204b85bd6
     def add_method(self):
         &#34;&#34;&#34;[[Source]](https://medium.com/@mgarod/dynamically-add-a-method-to-a-class-in-python-c49204b85bd6)\n
         **See [Creating Custom Methods](#creating-custom-methods) for more information.**
         &#34;&#34;&#34;
+
         def decorator(func):
             @wraps(func)
             def wrapper(self, *args, **kwargs):
@@ -1451,10 +1458,8 @@ Makes the Robot start zooming if True, and makes the Robot stop zooming if False
             if on:
                 self.__prev_fps = FPS
                 FPS = self.__zoom_fps
-                print(&#34;ZOOM&#34;)
             else:
-                FPS = self.__prev_fps
-                print(&#34;no longer zooming&#34;)</code></pre>
+                FPS = self.__prev_fps</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1476,6 +1481,7 @@ Makes the Robot start zooming if True, and makes the Robot stop zooming if False
     &#34;&#34;&#34;[[Source]](https://medium.com/@mgarod/dynamically-add-a-method-to-a-class-in-python-c49204b85bd6)\n
     **See [Creating Custom Methods](#creating-custom-methods) for more information.**
     &#34;&#34;&#34;
+
     def decorator(func):
         @wraps(func)
         def wrapper(self, *args, **kwargs):
@@ -1566,7 +1572,7 @@ Makes the Robot start zooming if True, and makes the Robot stop zooming if False
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def front_is_clear(self): #TODO: maybe invert
+<pre><code class="python">def front_is_clear(self):  # TODO: maybe invert
     &#34;&#34;&#34;Returns True if there are no walls directly in front of the Robot, and False if there are.\n
     **return type:** ```bool```
     &#34;&#34;&#34;
@@ -1648,8 +1654,6 @@ Makes the Robot start zooming if True, and makes the Robot stop zooming if False
         else:
             _continued_exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I ran into a wall! &#34;)
             self.turn_off()
-
-        print(&#34;tried to move&#34;)
         self.has_moved_this_frame = True</code></pre>
 </details>
 </dd>
@@ -1670,7 +1674,7 @@ Makes the Robot start zooming if True, and makes the Robot stop zooming if False
     global BEEPERS
     if self.is_alive:
         self.wait()
-        beepers_at_pos = [b for b in BEEPERS if b.__tile_x == self.__tile_x and b.__tile_y == self.__tile_y]
+        beepers_at_pos = [b for b in BEEPERS if b.tile_x == self.__tile_x and b.tile_y == self.__tile_y]
         if len(beepers_at_pos) &gt; 0:
             beepers_at_pos[0]._dec()
             self.__beepers += 1
@@ -1705,8 +1709,6 @@ Makes the Robot start zooming if True, and makes the Robot stop zooming if False
             # raise Exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I don&#39;t have any beepers! &#34;)
             _continued_exception(&#34;[&#34; + self.__color[0] + &#34; Robot] I don&#39;t have any beepers! &#34;)
             self.turn_off()
-
-        print(&#34;tried to put beeper&#34; + str(self.__beepers))
         self.has_moved_this_frame = True</code></pre>
 </details>
 </dd>
@@ -1753,7 +1755,7 @@ Sets the speed for the Robot to use when zooming.\n
     &#34;&#34;&#34;Returns True if the Robot is standing on at least 1 Beeper, and False if not.\n
     **return type:** ```bool```
     &#34;&#34;&#34;
-    return len([b for b in BEEPERS if b.__tile_x == self.__tile_x and b.__tile_y == self.__tile_y]) &gt; 0</code></pre>
+    return len([b for b in BEEPERS if b.tile_x == self.__tile_x and b.tile_y == self.__tile_y]) &gt; 0</code></pre>
 </details>
 </dd>
 <dt id="karel_the_robot.Robot.standing_on_any_robots"><code class="name flex">
@@ -1811,8 +1813,7 @@ Sets the speed for the Robot to use when zooming.\n
         self.wait()
         self.is_alive = False
         self.__array = _replace_2d(self.__array, YELLOW, L_GREY)
-        self._scale_image(TILE_WIDTH)
-        print(&#34;am dead&#34;)</code></pre>
+        self._scale_image(TILE_WIDTH)</code></pre>
 </details>
 </dd>
 <dt id="karel_the_robot.Robot.wait"><code class="name flex">
@@ -1829,7 +1830,6 @@ Sets the speed for the Robot to use when zooming.\n
     global FPS
     if self.is_alive:  # prevents commands from being run before the loop checks for dead robots, putting it in an infinite loop
         while self.has_moved_this_frame:
-            # print(&#34;waiting for frame&#34;)
             time.sleep(1.0 / FPS)</code></pre>
 </details>
 </dd>
@@ -1864,10 +1864,8 @@ Makes the Robot start zooming if True, and makes the Robot stop zooming if False
             if on:
                 self.__prev_fps = FPS
                 FPS = self.__zoom_fps
-                print(&#34;ZOOM&#34;)
             else:
-                FPS = self.__prev_fps
-                print(&#34;no longer zooming&#34;)</code></pre>
+                FPS = self.__prev_fps</code></pre>
 </details>
 </dd>
 </dl>
@@ -1924,7 +1922,7 @@ Makes the Robot start zooming if True, and makes the Robot stop zooming if False
 
     # maybe add window size attributes
     def __init__(self, width, height, name=&#34;Karel J Robot&#34;, fps=4, beeper_pos=[], wall_pos=[]):
-        global FPS, BEEPERS
+        global FPS, BEEPERS, HORIZ_TILES, VERT_TILES
         self.IDEAL_HEIGHT = 700
         &#34;&#34;&#34;####**CHANGE THIS VALUE DEPENDING ON THE DEVICE THIS SCRIPT IS RUNNING ON**####
         &gt;This is the maximum number of pixels the World window can take up vertically.\n
@@ -1937,8 +1935,8 @@ Makes the Robot start zooming if True, and makes the Robot stop zooming if False
         &gt;* Ideal value for Repl.it: 800&#34;&#34;&#34;
         FPS = fps
 
-        self.__width = width
-        self.__height = height
+        HORIZ_TILES = width
+        VERT_TILES = height
         self.__beeper_pos = beeper_pos
         self.__wall_pos = wall_pos
 
@@ -2049,17 +2047,16 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
         else:
             self.__thread.start()
 
-
     def __run(self):
 
         print(&#34;\n&#34; + &#34;[World] Initializing...&#34; + &#34;\n&#34;)
-        global SCREEN_WIDTH, SCREEN_HEIGHT, TILE_WIDTH, FPS, BEEPERS, BEEPER_SURF, WALLS
+        global SCREEN_WIDTH, SCREEN_HEIGHT, TILE_WIDTH, FPS, BEEPERS, BEEPER_SURF, WALLS, HORIZ_TILES, VERT_TILES
         pygame.init()
-        TILE_WIDTH = int(min(self.IDEAL_WIDTH / (self.__width + 1), self.IDEAL_HEIGHT / (self.__height + 1)))
+        TILE_WIDTH = int(min(self.IDEAL_WIDTH / (HORIZ_TILES + 1), self.IDEAL_HEIGHT / (VERT_TILES + 1)))
         if TILE_WIDTH % 2 == 1:
             TILE_WIDTH -= 1
-        SCREEN_WIDTH = TILE_WIDTH * (self.__width + 1)
-        SCREEN_HEIGHT = TILE_WIDTH * (self.__height + 1)
+        SCREEN_WIDTH = TILE_WIDTH * (HORIZ_TILES + 1)
+        SCREEN_HEIGHT = TILE_WIDTH * (VERT_TILES + 1)
         print(&#34;[World] Screen height is &#34; + str(SCREEN_HEIGHT))
         self.__screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])  # add scaling
 
@@ -2076,15 +2073,15 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
         print(&#34;[World] Generating background...&#34;)
         self.__background = pygame.Surface([SCREEN_WIDTH, SCREEN_HEIGHT])
         self.__background.fill(WHITE)
-        for x in range(0, self.__width + 1):
+        for x in range(0, HORIZ_TILES + 1):
             pygame.draw.line(self.__background, BLACK, ((x + 0.5) * TILE_WIDTH, 0.5 * TILE_WIDTH),
-                             ((x + 0.5) * TILE_WIDTH, (self.__height + 0.5) * TILE_WIDTH))
-            self.__background.blit(pygame.font.Font(&#39;freesansbold.ttf&#39;, 10).render(str(x), True, BLACK),
+                             ((x + 0.5) * TILE_WIDTH, (VERT_TILES + 0.5) * TILE_WIDTH))
+            self.__background.blit(pygame.font.Font(&#34;freesansbold.ttf&#34;, 10).render(str(x), True, BLACK),
                                    ((x + 0.5) * TILE_WIDTH, 0.25 * TILE_WIDTH))
-        for y in range(0, self.__height + 1):
+        for y in range(0, VERT_TILES + 1):
             pygame.draw.line(self.__background, BLACK, (0.5 * TILE_WIDTH, (y + 0.5) * TILE_WIDTH),
-                             ((self.__width + 0.5) * TILE_WIDTH, (y + 0.5) * TILE_WIDTH))
-            self.__background.blit(pygame.font.Font(&#39;freesansbold.ttf&#39;, 10).render(str(y), True, BLACK),
+                             ((HORIZ_TILES + 0.5) * TILE_WIDTH, (y + 0.5) * TILE_WIDTH))
+            self.__background.blit(pygame.font.Font(&#34;freesansbold.ttf&#34;, 10).render(str(y), True, BLACK),
                                    (0.25 * TILE_WIDTH, (y + 0.5) * TILE_WIDTH))
 
         for w in self.__wall_pos:
@@ -2105,7 +2102,6 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
         self.__idle_frames = 0
 
         print(&#34;[World] Done!&#34; + &#34;\n\n\n\n&#34;)
-        print(WALLS)
         # quits if it idles for more than one second
         while sum(r.is_alive for r in self.__robots) &gt; 0 and self.__idle_frames &lt; FPS:
             pygame.event.get()  # required or else the window thinks it&#39;s not responding
@@ -2344,10 +2340,9 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
 <li><a href="#creating-custom-methods">Creating Custom Methods</a></li>
 <li><a href="#using-worlds-within-code">Using Worlds within Code</a></li>
 <li><a href="#setting-up-world-files">Setting up World Files</a><ul>
-<li><a href="#required-parameters">Required Parameters:</a></li>
-<li><a href="#optional-parameters">Optional Parameters:</a></li>
 </ul>
 </li>
+<li><a href="#future-plans">Future Plans</a></li>
 </ul>
 </div>
 <ul id="index">

@@ -188,6 +188,13 @@
 
 >>![Example World Screenshot](https://cjbell630.github.io/example-world.jpg)
 
+##Future Plans##
+* Add all possible error messages (most are present, but not all)
+* Figure out a clean way to show Robot movements in the console (such as "[Green Robot] Moved once")
+* Get the zoom feature working
+* Get the global movement variable working
+* Add more objects for Robots to interact with (ex rotating gears)
+
 
 ---
 
@@ -909,4 +916,4 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
         pygame.quit()
 
 # TODO: add dialogue for all robot moves
-# TODO: add all error messages
+# TODO: add more error messages
