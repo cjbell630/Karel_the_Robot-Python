@@ -1,1 +1,1 @@
-Please see /doc/karel_the_robot.html for documentation!
+Please see https://cjbell630.github.io/Karel_the_Robot-Python for documentation!
