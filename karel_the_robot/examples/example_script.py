@@ -1,5 +1,4 @@
-from src.karel_the_robot import World, Robot
-
+from karel_the_robot.src.karel_the_robot import World, Robot
 
 # Create a new turn method for all Robots to use
 @Robot.add_method(Robot)

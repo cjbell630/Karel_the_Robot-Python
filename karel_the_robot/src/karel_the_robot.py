@@ -22,7 +22,7 @@
 
 >Everything shown above (except for the comment) must be present for the custom method to work.
 
->Within this new method, "Robot" can be used to call methods on the Robot using this method, as seen in the example below:
+>Within this new method, "Robot" can be used to call methods on the Robot using this method, as seen in the examples below:
 
 >>
     @Robot.add_method(Robot)
@@ -30,7 +30,7 @@
         Robot.move()
         Robot.move()
 
->Multiple methods can be created by giving each one a full header, as seen in the example below:
+>Multiple methods can be created by giving each one a full header, as seen in the examples below:
 
 >>
     @Robot.add_method(Robot)
@@ -44,7 +44,7 @@
         Robot.move()
         Robot.move()
 
->Parameters can be added after the required "Robot" parameter, as seen in the example below:
+>Parameters can be added after the required "Robot" parameter, as seen in the examples below:
 
 >>
     @Robot.add_method(Robot)
@@ -52,7 +52,7 @@
         if true_or_false == True:
             Robot.move()
 
->If the resulting method is called on a Robot, the "Robot" parameter will be automatically filled, as seen in the example below:
+>If the resulting method is called on a Robot, the "Robot" parameter will be automatically filled, as seen in the examples below:
 
 >>
     karel = Robot(0, 0, 0, 0)
@@ -60,7 +60,7 @@
 >>
     # Result: karel moves once.
 
->Methods are added to all members of the Robot class, as seen in the example below:
+>Methods are added to all members of the Robot class, as seen in the examples below:
 
 >>
     @Robot.add_method(Robot)
@@ -107,7 +107,7 @@
 
 >Once all Robots are added, call [```World.start()```](#karel_the_robot.World.start)
 
->All code to be executed while the World is running should be placed below this line, as seen in the example below:
+>All code to be executed while the World is running should be placed below this line, as seen in the examples below:
 
 >>
     world = World.from_file("example_world.txt")
@@ -175,7 +175,7 @@
     * **fps (int)** the FPS of the World
     * Default: ```4```
 
->The following is an example World file:
+>The following is an examples World file:
 
 >>
     name: Example World
@@ -207,7 +207,6 @@ import time
 import traceback
 import os
 from functools import wraps
-from itertools import count
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
@@ -437,12 +436,13 @@ class Robot(pygame.sprite.Sprite):
     * Current colors: ```[Green, Orange, Pink, Teal, Purple]```
     * Colors are automatically assigned based on the order Robots are added to the World.
 """
-    __ids = count(0)
+    __num_of_robots = 0
 
     def __init__(self, x, y, direction, num_of_beepers, color=-1):
         # color is an int, maybe add string colors eventually
         super().__init__()
-        self.id = next(self.__ids)
+        Robot.__num_of_robots += 1
+        self.id = Robot.__num_of_robots
         self.__color = SLEEVE_COLORS[(self.id if color == -1 else color) % len(SLEEVE_COLORS)]
         self.__tile_x = x
         self.__tile_y = y
