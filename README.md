@@ -2,5 +2,4 @@
 Alternatively, the raw HTML file can be found in [/docs/karel_the_robot-doc.html](/docs/karel_the_robot-doc.html)
 
 ***All credit to the concept and ideas belong to the original Karel team (made in Java). This is a PORT, not an original creation by any means.***
-
 importing
