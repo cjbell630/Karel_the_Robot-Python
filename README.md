@@ -3,7 +3,8 @@ Alternatively, the raw HTML file can be found in [/docs/karel_the_robot-doc.html
 
 ##
 ## Installing ##
-#### Karel the Robot is now on PyPi!!! ####
+**Karel the Robot is now on PyPi!!!**
+
 To install, run
 >\> pip install karel-the-robot
 
