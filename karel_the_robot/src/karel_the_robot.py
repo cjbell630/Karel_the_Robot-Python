@@ -1,15 +1,17 @@
 """
+##Installing and Importing##
+
+###Installing###
+**Karel the Robot is now on PyPi!!!**
+
+To install, run
+> > pip install karel_the_robot
 
 ##Importing##
 >When karel_the_robot.py is in the same path as your code
 
 >>
     from karel_the_robot import World, Robot
-
->When karel_the_robot.py is a in a subdirectory
-
->>
-    from subdir.karel_the_robot import World, Robot
 
 
 ##Creating Custom Methods##
@@ -432,7 +434,7 @@ class Robot(pygame.sprite.Sprite):
     * ```0 <= num_of_beepers```
 ##Optional Parameters:##
 * **color (int)** the sleeve color of the Robot
-    * ```0 < color < 4```
+    * ```0 <= color <= 4```
     * Current colors: ```[Green, Orange, Pink, Teal, Purple]```
     * Colors are automatically assigned based on the order Robots are added to the World.
 """

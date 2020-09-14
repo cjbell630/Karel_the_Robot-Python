@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
 <title>karel_the_robot API documentation</title>
-<meta name="description" content="Importing##
-&gt;When karel_the_robot.py is in the same path as your code …" />
+<meta name="description" content="Installing and Importing## …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -21,16 +20,20 @@
 <h1 class="title">Module <code>karel_the_robot</code></h1>
 </header>
 <section id="section-intro">
+<h2 id="installing-and-importing">Installing and Importing</h2>
+<h3 id="installing">Installing</h3>
+<p><strong>Karel the Robot is now on PyPi!!!</strong></p>
+<p>To install, run</p>
+<blockquote>
+<blockquote>
+<p>pip install karel_the_robot</p>
+</blockquote>
+</blockquote>
 <h2 id="importing">Importing</h2>
 <blockquote>
 <p>When karel_the_robot.py is in the same path as your code</p>
 <blockquote>
 <pre><code>from karel_the_robot import World, Robot
-</code></pre>
-</blockquote>
-<p>When karel_the_robot.py is a in a subdirectory</p>
-<blockquote>
-<pre><code>from subdir.karel_the_robot import World, Robot
 </code></pre>
 </blockquote>
 </blockquote>
@@ -44,7 +47,7 @@ def method_name(Robot):
 </code></pre>
 </blockquote>
 <p>Everything shown above (except for the comment) must be present for the custom method to work.</p>
-<p>Within this new method, "Robot" can be used to call methods on the Robot using this method, as seen in the example below:</p>
+<p>Within this new method, "Robot" can be used to call methods on the Robot using this method, as seen in the examples below:</p>
 <blockquote>
 <pre><code>@Robot.add_method(Robot)
 def move_twice(Robot):
@@ -52,7 +55,7 @@ def move_twice(Robot):
     Robot.move()
 </code></pre>
 </blockquote>
-<p>Multiple methods can be created by giving each one a full header, as seen in the example below:</p>
+<p>Multiple methods can be created by giving each one a full header, as seen in the examples below:</p>
 <blockquote>
 <pre><code>@Robot.add_method(Robot)
 def move_twice(Robot):
@@ -66,7 +69,7 @@ def move_thrice(Robot):
     Robot.move()
 </code></pre>
 </blockquote>
-<p>Parameters can be added after the required "Robot" parameter, as seen in the example below:</p>
+<p>Parameters can be added after the required "Robot" parameter, as seen in the examples below:</p>
 <blockquote>
 <pre><code>@Robot.add_method(Robot)
 def move_if_true(Robot, true_or_false):
@@ -74,7 +77,7 @@ def move_if_true(Robot, true_or_false):
         Robot.move()
 </code></pre>
 </blockquote>
-<p>If the resulting method is called on a Robot, the "Robot" parameter will be automatically filled, as seen in the example below:</p>
+<p>If the resulting method is called on a Robot, the "Robot" parameter will be automatically filled, as seen in the examples below:</p>
 <blockquote>
 <pre><code>karel = Robot(0, 0, 0, 0)
 karel.move_if_true(True)
@@ -82,7 +85,7 @@ karel.move_if_true(True)
 # Result: karel moves once.
 </code></pre>
 </blockquote>
-<p>Methods are added to all members of the Robot class, as seen in the example below:</p>
+<p>Methods are added to all members of the Robot class, as seen in the examples below:</p>
 <blockquote>
 <pre><code>@Robot.add_method(Robot)
 def move_twice(Robot):
@@ -127,7 +130,7 @@ def move_twice(Robot):
 <p>There are multiple ways to create a World, as documented <a href="#karel_the_robot.World">here</a>.</p>
 <p>To add Robots to a World, use <a href="#karel_the_robot.World.add_robots"><code>World.add_robots()</code></a></p>
 <p>Once all Robots are added, call <a href="#karel_the_robot.World.start"><code>World.start()</code></a></p>
-<p>All code to be executed while the World is running should be placed below this line, as seen in the example below:</p>
+<p>All code to be executed while the World is running should be placed below this line, as seen in the examples below:</p>
 <blockquote>
 <pre><code>world = World.from_file("example_world.txt")
 karel = Robot(1, 1, 0, 0)
@@ -227,7 +230,7 @@ parameter2: value
 </li>
 </ul>
 </blockquote>
-<p>The following is an example World file:</p>
+<p>The following is an examples World file:</p>
 <blockquote>
 <pre><code>name: Example World
 fps: 5
@@ -256,17 +259,19 @@ walls: (h 1.5 2.5 8.5) (v 4.5 3.5 7.5)
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
+##Installing and Importing##
+
+###Installing###
+**Karel the Robot is now on PyPi!!!**
+
+To install, run
+&gt; &gt; pip install karel_the_robot
 
 ##Importing##
 &gt;When karel_the_robot.py is in the same path as your code
 
 &gt;&gt;
     from karel_the_robot import World, Robot
-
-&gt;When karel_the_robot.py is a in a subdirectory
-
-&gt;&gt;
-    from subdir.karel_the_robot import World, Robot
 
 
 ##Creating Custom Methods##
@@ -279,7 +284,7 @@ walls: (h 1.5 2.5 8.5) (v 4.5 3.5 7.5)
 
 &gt;Everything shown above (except for the comment) must be present for the custom method to work.
 
-&gt;Within this new method, &#34;Robot&#34; can be used to call methods on the Robot using this method, as seen in the example below:
+&gt;Within this new method, &#34;Robot&#34; can be used to call methods on the Robot using this method, as seen in the examples below:
 
 &gt;&gt;
     @Robot.add_method(Robot)
@@ -287,7 +292,7 @@ walls: (h 1.5 2.5 8.5) (v 4.5 3.5 7.5)
         Robot.move()
         Robot.move()
 
-&gt;Multiple methods can be created by giving each one a full header, as seen in the example below:
+&gt;Multiple methods can be created by giving each one a full header, as seen in the examples below:
 
 &gt;&gt;
     @Robot.add_method(Robot)
@@ -301,7 +306,7 @@ walls: (h 1.5 2.5 8.5) (v 4.5 3.5 7.5)
         Robot.move()
         Robot.move()
 
-&gt;Parameters can be added after the required &#34;Robot&#34; parameter, as seen in the example below:
+&gt;Parameters can be added after the required &#34;Robot&#34; parameter, as seen in the examples below:
 
 &gt;&gt;
     @Robot.add_method(Robot)
@@ -309,7 +314,7 @@ walls: (h 1.5 2.5 8.5) (v 4.5 3.5 7.5)
         if true_or_false == True:
             Robot.move()
 
-&gt;If the resulting method is called on a Robot, the &#34;Robot&#34; parameter will be automatically filled, as seen in the example below:
+&gt;If the resulting method is called on a Robot, the &#34;Robot&#34; parameter will be automatically filled, as seen in the examples below:
 
 &gt;&gt;
     karel = Robot(0, 0, 0, 0)
@@ -317,7 +322,7 @@ walls: (h 1.5 2.5 8.5) (v 4.5 3.5 7.5)
 &gt;&gt;
     # Result: karel moves once.
 
-&gt;Methods are added to all members of the Robot class, as seen in the example below:
+&gt;Methods are added to all members of the Robot class, as seen in the examples below:
 
 &gt;&gt;
     @Robot.add_method(Robot)
@@ -364,7 +369,7 @@ walls: (h 1.5 2.5 8.5) (v 4.5 3.5 7.5)
 
 &gt;Once all Robots are added, call [```World.start()```](#karel_the_robot.World.start)
 
-&gt;All code to be executed while the World is running should be placed below this line, as seen in the example below:
+&gt;All code to be executed while the World is running should be placed below this line, as seen in the examples below:
 
 &gt;&gt;
     world = World.from_file(&#34;example_world.txt&#34;)
@@ -432,7 +437,7 @@ walls: (h 1.5 2.5 8.5) (v 4.5 3.5 7.5)
     * **fps (int)** the FPS of the World
     * Default: ```4```
 
-&gt;The following is an example World file:
+&gt;The following is an examples World file:
 
 &gt;&gt;
     name: Example World
@@ -464,10 +469,16 @@ import time
 import traceback
 import os
 from functools import wraps
-from itertools import count
 
 os.environ[&#39;PYGAME_HIDE_SUPPORT_PROMPT&#39;] = &#34;hide&#34;
 import pygame
+
+import sentry_sdk
+
+sentry_sdk.init(
+    &#34;https://5ccc0b1af0ce423abb24c4a306a238f6@o446990.ingest.sentry.io/5426981&#34;,
+    traces_sample_rate=1.0
+)
 
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 600
@@ -687,12 +698,13 @@ class Robot(pygame.sprite.Sprite):
     * Current colors: ```[Green, Orange, Pink, Teal, Purple]```
     * Colors are automatically assigned based on the order Robots are added to the World.
 &#34;&#34;&#34;
-    __ids = count(0)
+    __num_of_robots = 0
 
     def __init__(self, x, y, direction, num_of_beepers, color=-1):
         # color is an int, maybe add string colors eventually
         super().__init__()
-        self.id = next(self.__ids)
+        Robot.__num_of_robots += 1
+        self.id = Robot.__num_of_robots
         self.__color = SLEEVE_COLORS[(self.id if color == -1 else color) % len(SLEEVE_COLORS)]
         self.__tile_x = x
         self.__tile_y = y
@@ -1241,12 +1253,13 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
     * Current colors: ```[Green, Orange, Pink, Teal, Purple]```
     * Colors are automatically assigned based on the order Robots are added to the World.
 &#34;&#34;&#34;
-    __ids = count(0)
+    __num_of_robots = 0
 
     def __init__(self, x, y, direction, num_of_beepers, color=-1):
         # color is an int, maybe add string colors eventually
         super().__init__()
-        self.id = next(self.__ids)
+        Robot.__num_of_robots += 1
+        self.id = Robot.__num_of_robots
         self.__color = SLEEVE_COLORS[(self.id if color == -1 else color) % len(SLEEVE_COLORS)]
         self.__tile_x = x
         self.__tile_y = y
@@ -2338,10 +2351,16 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
 <h1>Index</h1>
 <div class="toc">
 <ul>
+<li><a href="#installing-and-importing">Installing and Importing</a><ul>
+<li><a href="#installing">Installing</a></li>
+</ul>
+</li>
 <li><a href="#importing">Importing</a></li>
 <li><a href="#creating-custom-methods">Creating Custom Methods</a></li>
 <li><a href="#using-worlds-within-code">Using Worlds within Code</a></li>
 <li><a href="#setting-up-world-files">Setting up World Files</a><ul>
+<li><a href="#required-parameters">Required Parameters:</a></li>
+<li><a href="#optional-parameters">Optional Parameters:</a></li>
 </ul>
 </li>
 <li><a href="#future-plans">Future Plans</a></li>
