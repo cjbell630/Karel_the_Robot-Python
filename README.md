@@ -5,7 +5,7 @@ Alternatively, the raw HTML file can be found in [/karel_the_robot/docs/karel_th
 ## Installing ##
 **Karel the Robot is now on PyPi!!!**
 
-To install, run
+To install, run:
 > pip install karel_the_robot
 
 ##
