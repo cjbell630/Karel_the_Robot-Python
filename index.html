@@ -21,21 +21,30 @@
 </header>
 <section id="section-intro">
 <h2 id="installing-and-importing">Installing and Importing</h2>
-<h3 id="installing">Installing</h3>
+<blockquote>
 <p><strong>Karel the Robot is now on PyPi!!!</strong></p>
-<p>To install, run</p>
+<p>To install, run:</p>
 <blockquote>
-<blockquote>
-<p>pip install karel_the_robot</p>
+<pre><code>pip install karel_the_robot
+</code></pre>
 </blockquote>
+<p>Some IDEs (such as PyCharm) might be able to automatically run this command if you type the import sequence.</p>
+<p>Additionally, when using <a href="repl.it">repl.it</a>, you may have to import manually.
+To do so, follow these steps within your repl:</p>
+<ul>
+<li>Click the "Packages" tab</li>
+<li>Search for and select "karel-the-robot" (dashes instead of underscores)</li>
+<li>Press the plus (+) symbol by the package name</li>
+</ul>
 </blockquote>
-<h2 id="importing">Importing</h2>
+<p><br></p>
 <blockquote>
-<p>When karel_the_robot.py is in the same path as your code</p>
+<p>Once installed, the recommended way to import is:</p>
 <blockquote>
 <pre><code>from karel_the_robot import World, Robot
 </code></pre>
 </blockquote>
+<p>Of course, there are numerous other ways to import.</p>
 </blockquote>
 <h2 id="creating-custom-methods">Creating Custom Methods</h2>
 <blockquote>
@@ -261,18 +270,30 @@ walls: (h 1.5 2.5 8.5) (v 4.5 3.5 7.5)
 <pre><code class="python">&#34;&#34;&#34;
 ##Installing and Importing##
 
-###Installing###
-**Karel the Robot is now on PyPi!!!**
+&gt;**Karel the Robot is now on PyPi!!!**
 
-To install, run
-&gt; &gt; pip install karel_the_robot
+&gt;To install, run:
 
-##Importing##
-&gt;When karel_the_robot.py is in the same path as your code
+&gt;&gt;
+    pip install karel_the_robot
+
+&gt;Some IDEs (such as PyCharm) might be able to automatically run this command if you type the import sequence.
+
+&gt;Additionally, when using [repl.it](repl.it), you may have to import manually.
+&gt;To do so, follow these steps within your repl:
+
+&gt;* Click the &#34;Packages&#34; tab
+* Search for and select &#34;karel-the-robot&#34; (dashes instead of underscores)
+* Press the plus (+) symbol by the package name
+
+&lt;br&gt;
+
+&gt;Once installed, the recommended way to import is:
 
 &gt;&gt;
     from karel_the_robot import World, Robot
 
+&gt;Of course, there are numerous other ways to import.
 
 ##Creating Custom Methods##
 &gt;To create custom methods, follow this format:
@@ -2351,11 +2372,7 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#installing-and-importing">Installing and Importing</a><ul>
-<li><a href="#installing">Installing</a></li>
-</ul>
-</li>
-<li><a href="#importing">Importing</a></li>
+<li><a href="#installing-and-importing">Installing and Importing</a></li>
 <li><a href="#creating-custom-methods">Creating Custom Methods</a></li>
 <li><a href="#using-worlds-within-code">Using Worlds within Code</a></li>
 <li><a href="#setting-up-world-files">Setting up World Files</a><ul>
