@@ -1,5 +1,5 @@
 # Please click [here](https://cjbell630.github.io/Karel_the_Robot-Python) for documentation! ##
-Alternatively, the raw HTML file can be found in [/docs/karel_the_robot-doc.html](/docs/karel_the_robot-doc.html).
+Alternatively, the raw HTML file can be found in [/karel_the_robot/docs/karel_the_robot-doc.html](/karel_the_robot/docs/karel_the_robot-doc.html).
 
 ##
 ## Installing ##
