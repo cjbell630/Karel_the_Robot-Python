@@ -10,7 +10,7 @@
 
 >Some IDEs (such as PyCharm) might be able to automatically run this command if you type the import sequence.
 
->Additionally, when using [repl.it](repl.it), you may have to import manually.
+>Additionally, when using [repl.it](https://repl.it/), you may have to import manually.
 >To do so, follow these steps within your repl:
 
 >* Click the "Packages" tab
