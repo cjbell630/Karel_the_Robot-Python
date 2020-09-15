@@ -27,5 +27,6 @@ Once installed, the recommended way to import is:
     from karel_the_robot import World, Robot
 
 Of course, there are numerous other ways to import.
+#
 
 ***All credit to the concept and ideas belong to the original Karel team (made in Java). This is a PORT, not an original creation by any means.***
