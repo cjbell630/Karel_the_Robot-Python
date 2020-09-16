@@ -162,7 +162,7 @@
     * **h (int)** the height in tiles of the World
         * ```0 < h```
 
->>###Optional Parameters:###
+>>###Optional Parameters###
 * **beepers** the positions of Beepers in the World
     * Formatting: ```beepers: (x y n) (x y n) (x y n)...```
     * **x (int)** the x position of the Beeper cluster
@@ -214,6 +214,7 @@
 ---
 
 """
+import sys
 
 import numpy
 import threading
@@ -369,13 +370,15 @@ HORIZ_TILES = 0
 VERT_TILES = 0
 
 
-def _continued_exception(text):
+def _raise_and_catch_exception(text, exception_type=Exception, exit_after_exc=False):
     try:
-        raise Exception(text)
-    except Exception as exc:
+        raise exception_type(text) from None
+    except exception_type as exc:
         print("\n")
         traceback.print_stack(limit=-1)
-        traceback.print_exception(Exception, exc, None, limit=-1)
+        traceback.print_exception(exception_type, exc, None, limit=-1)
+        if exit_after_exc:
+            sys.exit()
 
 
 def _replace_2d(array, value, replacement):
@@ -432,6 +435,58 @@ def _extract_vals_inside_parenthesis(string, open_parenthesis_index):
     return p
 
 
+# doesn't work with * values if there are also any default values
+#   reason is becasuse the values are stored in this order: normal values, *values, default values.
+#   this means that if there are any default values assigned in the method call, there is no way to
+#   distinguish between them and the *values, since they're all stored in one array.
+#   At least, I haven't found a way yet.
+# doesn't work with ** values at all
+def _force_param_types(func):
+    # might not need function parameter
+    def check_for_error(function, param_name, supplied_value):
+        annotations = function.__annotations__
+        supplied_value_type = type(supplied_value)
+        if annotations.__contains__(param_name):
+            required_type = annotations[param_name]
+            if required_type != supplied_value_type:
+                _raise_and_catch_exception(function.__name__ + "(): Parameter \"" + param_name +
+                                           "\" should be type /" + required_type.__name__ + "/. \n   Supplied: /" +
+                                           supplied_value_type.__name__ + "/ value: " + str(supplied_value), TypeError,
+                                           True)
+
+    @wraps(func)
+    def check(*args, **kwargs):
+        counter = 0
+        all_params = func.__code__.co_varnames
+        if all_params and type(all_params is list):
+            for value in args:
+                check_for_error(func, all_params[min(counter, len(all_params) - 1)], value)
+                counter += 1
+
+            for param_name, value in kwargs.items():
+                check_for_error(func, param_name, value)
+        return func(*args, **kwargs)
+
+    return check
+
+
+def add_method(cls):
+    """[[Source]](https://medium.com/@mgarod/dynamically-add-a-method-to-a-class-in-python-c49204b85bd6)\n
+    **See [Creating Custom Methods](#creating-custom-methods) for more information.**
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            return func(self, *args, **kwargs)
+
+        setattr(cls, func.__name__, wrapper)
+        # Note we are not binding func, but wrapper which accepts self but does exactly the same as func
+        return func  # returning func means func can still be used normally
+
+    return decorator
+
+
 class Robot(pygame.sprite.Sprite):
     """Creates a new Robot and stores information about it.
 ##Required Parameters:##
@@ -451,12 +506,32 @@ class Robot(pygame.sprite.Sprite):
 """
     __num_of_robots = 0
 
-    def __init__(self, x, y, direction, num_of_beepers, color=-1):
+    @_force_param_types
+    def __init__(self, x: int, y: int, direction: str, num_of_beepers: int, color: int = -1):
         # color is an int, maybe add string colors eventually
         super().__init__()
+
         Robot.__num_of_robots += 1
         self.id = Robot.__num_of_robots
+
         self.__color = SLEEVE_COLORS[(self.id if color == -1 else color) % len(SLEEVE_COLORS)]
+
+        # Parameter checks
+        if x < 0:
+            _raise_and_catch_exception("[" + self.__color[0] + " Robot] Starting x position cannot be negative! ",
+                                       ValueError, True)
+        if y < 0:
+            _raise_and_catch_exception("[" + self.__color[0] + " Robot] Starting y position cannot be negative! ",
+                                       ValueError, True)
+        if direction not in DIRECTIONS:
+            _raise_and_catch_exception("[" + self.__color[
+                0] + " Robot] \"" + str(direction) + "\" is not a valid direction! \nValid directions: " + str(
+                [str(i) for i in DIRECTIONS]),
+                                       ValueError, True)
+        if num_of_beepers < 0:
+            _raise_and_catch_exception(
+                "[" + self.__color[0] + " Robot] Starting number of beepers cannot be negative! ",
+                ValueError, True)
         self.__tile_x = x
         self.__tile_y = y
         self.__direction = DIRECTIONS[direction]
@@ -513,7 +588,7 @@ class Robot(pygame.sprite.Sprite):
                     self.__rect.y -= TILE_WIDTH
                     self.__tile_y -= 1
             else:
-                _continued_exception("[" + self.__color[0] + " Robot] I ran into a wall! ")
+                _raise_and_catch_exception("[" + self.__color[0] + " Robot] I ran into a wall! ", RuntimeError)
                 self.turn_off()
             self.has_moved_this_frame = True
 
@@ -546,7 +621,7 @@ class Robot(pygame.sprite.Sprite):
                     BEEPERS.add(_Beeper(self.__tile_x, self.__tile_y, 1))
             else:
                 # raise Exception("[" + self.__color[0] + " Robot] I don't have any beepers! ")
-                _continued_exception("[" + self.__color[0] + " Robot] I don't have any beepers! ")
+                _raise_and_catch_exception("[" + self.__color[0] + " Robot] I don't have any beepers! ", RuntimeError)
                 self.turn_off()
             self.has_moved_this_frame = True
 
@@ -628,23 +703,8 @@ class Robot(pygame.sprite.Sprite):
     def _draw(self, screen):
         screen.blit(self.__image, (self.__rect.x, self.__rect.y))
 
-    def add_method(self):
-        """[[Source]](https://medium.com/@mgarod/dynamically-add-a-method-to-a-class-in-python-c49204b85bd6)\n
-        **See [Creating Custom Methods](#creating-custom-methods) for more information.**
-        """
-
-        def decorator(func):
-            @wraps(func)
-            def wrapper(self, *args, **kwargs):
-                return func(self, *args, **kwargs)
-
-            setattr(self, func.__name__, wrapper)
-            # Note we are not binding func, but wrapper which accepts self but does exactly the same as func
-            return func  # returning func means func can still be used normally
-
-        return decorator
-
-    def set_zoom_fps(self, fps):
+    @_force_param_types
+    def set_zoom_fps(self, fps: int):
         """**ADVANCED USERS ONLY**\n
 Sets the speed for the Robot to use when zooming.\n
 
@@ -655,7 +715,8 @@ Sets the speed for the Robot to use when zooming.\n
         """
         self.__zoom_fps = fps
 
-    def zoom(self, on):  # TODO: zooming is quirky
+    @_force_param_types
+    def zoom(self, on: bool):  # TODO: zooming is quirky
         """**ADVANCED USERS ONLY**\n
 Makes the Robot start zooming if True, and makes the Robot stop zooming if False.\n
 ##Required Parameters:##
@@ -731,7 +792,10 @@ class World(object):
 """
 
     # maybe add window size attributes
-    def __init__(self, width, height, name="Karel J Robot", fps=4, beeper_pos=[], wall_pos=[]):
+    # TODO: make window sizes publicly customizable or something
+    # TODO: make forced param types work
+    @_force_param_types
+    def __init__(self, width: int, height: int, name: str="Karel J Robot World", fps: int=4, beeper_pos: list = [], wall_pos=[]):
         global FPS, BEEPERS, HORIZ_TILES, VERT_TILES
         self.IDEAL_HEIGHT = 700
         """####**CHANGE THIS VALUE DEPENDING ON THE DEVICE THIS SCRIPT IS RUNNING ON**####
@@ -764,13 +828,19 @@ class World(object):
         self.__name = name
 
     @classmethod  # constructor for loading a file
-    def from_file(cls, filename):
+    @_force_param_types
+    def from_file(cls, filename: str):
         """Creates a World from a file.
 ##Required Parameters:##
 * **filename (str)** the file name of the World to be loaded, including the file type
 See [Setting up World Files](#setting-up-world-files) for information on setting up World files.
 """
-        file = open(filename)
+
+        try:
+            file = open(filename)
+        except FileNotFoundError:
+            _raise_and_catch_exception("Could not locate the file at " + filename + "!", FileNotFoundError, True)
+
         width = 0
         height = 0
         fps = 4
@@ -807,20 +877,22 @@ See [Setting up World Files](#setting-up-world-files) for information on setting
         file.close()
         return cls(width, height, name=name, fps=fps, beeper_pos=beepers, wall_pos=walls)
 
-    def add_robots(self, *robots):
+    @_force_param_types
+    def add_robots(self, *robots: Robot):
         """Adds Robots to the World.
 ##Required Parameters:##
 * **robots (Robot...)** any Robots to be added to the World
 See [Using Worlds within Code](#using-worlds-within-code) for more detailed information.
 """
         if self.__thread.is_alive():
-            _continued_exception("[World] Cannot add robots while the world is running!")
+            _raise_and_catch_exception("[World] Cannot add robots while the world is running! ")
         else:
             for r in robots:
                 self.__robots.append(r)
                 print("[World] Added " + r.get_sleeve_color() + " Robot")
 
-    def save_screenshot(self, filename="screenshot.jpg"):
+    @_force_param_types
+    def save_screenshot(self, filename: str = "screenshot.jpg"):
         """Saves a screenshot of the World.
 ##Optional Parameters:##
 * **filename (str)** the desired filename of the screenshot
@@ -833,9 +905,10 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
             pygame.image.save(self.__screen, filename)
             print("[World] Saved screenshot as \"" + filename + "\".")
         else:
-            _continued_exception("[World] Cannot take screenshot until the World is running!")
+            _raise_and_catch_exception("[World] Cannot take screenshot until the World is running! ", RuntimeError)
 
-    def set_fps(self, fps):
+    @_force_param_types
+    def set_fps(self, fps: int):
         """Sets the FPS of the World.\n
 **IMPORTANT:** Can only be called before [```World.start()```](#karel_the_robot.World.start) is called.
 ##Required Parameters:##
@@ -844,7 +917,7 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
 """
         global FPS
         if self.__thread.is_alive():
-            _continued_exception("[World] Cannot change FPS while the World is running!")
+            _raise_and_catch_exception("[World] Cannot change FPS while the World is running!")
         else:
             FPS = fps
             print("[World] Changed FPS.")
@@ -853,7 +926,8 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
         """Starts the World.\n
 See [Using Worlds within Code](#using-worlds-within-code) for more detailed information."""
         if self.__thread.is_alive():
-            _continued_exception("[World] Cannot start the World while the World is already running!")
+            _raise_and_catch_exception("[World] Cannot start the World while the World is already running! ",
+                                       RuntimeError)
         else:
             self.__thread.start()
 
