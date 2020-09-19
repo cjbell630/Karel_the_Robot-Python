@@ -224,8 +224,11 @@ import os
 import sentry_sdk
 from functools import wraps
 
+# has to go after "import os" and before "import pygme"
+# or else Pygame prompts will be printed upon importing
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
-import pygame  # has to go here or else Pygame prompts will be printed upon importing
+
+import pygame
 
 sentry_sdk.init(
     "https://5ccc0b1af0ce423abb24c4a306a238f6@o446990.ingest.sentry.io/5426981",
@@ -257,7 +260,7 @@ PINK = (255, 165, 245)
 TEAL = (0, 160, 180)
 PURPLE = (200, 0, 255)
 
-SLEEVE_COLORS = [
+SLEEVE_COLORS = [ #TODO: make dictionary
     ("Green", GREEN), ("Orange", ORANGE), ("Pink", PINK), ("Blue", TEAL), ("Purple", PURPLE)
 ]
 
