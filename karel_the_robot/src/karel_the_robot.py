@@ -200,7 +200,7 @@
 
 >This file will produce the following World:
 
->>![Example World Screenshot](https://cjbell630.github.io/example-world.jpg)
+>>![Example World Screenshot](https://cjbell630.github.io/res/example-world.jpg)
 
 ##Future Plans##
 * Add all possible error messages (most are present, but not all)
