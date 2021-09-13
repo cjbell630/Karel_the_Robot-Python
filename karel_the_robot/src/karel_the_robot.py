@@ -1010,8 +1010,12 @@ See [Using Worlds within Code](#using-worlds-within-code) for more detailed info
             pygame.display.flip()
         print("[World] Saving screenshot...")
         pygame.image.save(self.__screen, "final_world_status.jpg")
-        print("[World] Quitting...")
-        pygame.quit()
+        print("[World] Program finished...")
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
 
 # TODO: add dialogue for all robot moves
 # TODO: add more error messages
