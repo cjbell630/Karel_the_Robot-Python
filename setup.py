@@ -54,7 +54,7 @@ class UploadCommand(Command):
 # This call to setup() does all the work
 setup(
     name="karel_the_robot",  # what will be typed when you use pip install
-    version="1.1.0",
+    version="1.1.1",
     description="Unofficial port of Karel the Robot to Python",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -64,7 +64,7 @@ setup(
     packages=["karel_the_robot"],  # what will be typed when you use import
     package_dir={"karel_the_robot": "karel_the_robot/src"},
     include_package_data=True,
-    install_requires=["numpy", "pygame", "sentry_sdk"],
+    install_requires=["numpy", "pygame"],
     # $ setup.py publish support.
     cmdclass={
         'upload': UploadCommand,

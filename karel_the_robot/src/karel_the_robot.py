@@ -221,7 +221,6 @@ import threading
 import time
 import traceback
 import os
-import sentry_sdk
 from functools import wraps
 
 # has to go after "import os" and before "import pygme"
@@ -229,11 +228,6 @@ from functools import wraps
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 import pygame
-
-sentry_sdk.init(
-    "https://5ccc0b1af0ce423abb24c4a306a238f6@o446990.ingest.sentry.io/5426981",
-    traces_sample_rate=1.0
-)
 
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 600
